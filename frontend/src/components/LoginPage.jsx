@@ -41,15 +41,9 @@ const LoginPage = () => {
 
                 <div className="mt-6 text-center text-sm text-gray-600">
                     Don’t have an account?{" "}
-                    <a href="#" className="text-blue-600 hover:underline">
+                    <a href="/SignupPage" className="text-blue-600 hover:underline">
                         Register here
                     </a>
-                </div>
-
-                <div className="mt-4">
-                    <button className="w-full border border-gray-300 text-gray-700 py-2 rounded-xl hover:bg-gray-100 transition">
-                        Admin Login
-                    </button>
                 </div>
             </div>
         </div>
