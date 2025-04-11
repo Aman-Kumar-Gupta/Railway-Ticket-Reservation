@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import logo from '../assets/logo2.webp';
 import { useNavigate } from 'react-router-dom';
+import Navbar from './Navbar';
 const DashboardCard = ({ title, description, href }) => (
     <a
         href={href}
@@ -18,7 +19,10 @@ const UserDashboard = () => {
     const [searchType, setSearchType] = useState('stations'); // 'stations' or 'trainNumber'
 
     return (
+        <>
+        {/* <Navbar /> */}
         <div className="min-h-screen w-full relative">
+            
             {/* Railway Background with Overlay */}
             <div className="absolute inset-0 z-0">
                 <div 
@@ -32,8 +36,7 @@ const UserDashboard = () => {
 
             {/* Header with Branding */}
             <header className="w-full bg-gradient-to-r from-blue-900/90 to-indigo-900/90 backdrop-blur-sm shadow-lg relative z-10 border-b border-white/10">
-                <div className="max-w-7xl mx-auto px-4 py-3 flex items-center">
-                    {/* Logo - replace '/path/to/ir-logo.png' with actual path */}
+                <div className="max-w-7xl mx-auto px-4 py-3 flex items-center">                    {/* Logo - replace '/path/to/ir-logo.png' with actual path */}
                     <img
                         src={logo}
                         alt="Indian Railways Logo"
@@ -190,6 +193,7 @@ const UserDashboard = () => {
                 </section>
             </main>
         </div>
+        </>
     );
 };
 
