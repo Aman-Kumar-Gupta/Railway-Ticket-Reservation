@@ -18,21 +18,21 @@ function App() {
   return (
     <Router>
       <div className="app">
-        <Navbar />
+        {/* <Navbar /> */}
         <main className="main-content">
           <Routes>
-            <Route path="/" element={<UserDashboard />} />
+            <Route path="/" element={ <UserDashboard />} />
             <Route path="/LoginPage" element={<LoginPage />} />
             <Route path="/SignupPage" element={<SignupPage />} />
-            <Route path="/book-ticket" element={<BookTicket />} />
-            <Route path="/pnr-status" element={<PNRStatus />} />
-            <Route path="/train-schedule" element={<TrainSchedule />} />
-            <Route path="/seat-availability" element={<SeatAvailability />} />
-            <Route path="/cancel-ticket" element={<CancelTicket />} />
-            <Route path="/my-bookings" element={<MyBookings />} />
-            <Route path="/manage-trains" element={<ManageTrains />} />
-            <Route path="/manage-stations" element={<ManageStations />} />
-            <Route path="/reports" element={<ReportsAndInsights />} />
+            <Route path="/book-ticket" element={<><Navbar /><BookTicket /></>} />
+            <Route path="/pnr-status" element={<><Navbar /><PNRStatus /></>} />
+            <Route path="/train-schedule" element={<><Navbar /><TrainSchedule /></>} />
+            <Route path="/seat-availability" element={<><Navbar /><SeatAvailability /></>} />
+            <Route path="/cancel-ticket" element={<><Navbar /><CancelTicket /></>} />
+            <Route path="/my-bookings" element={<><Navbar /><MyBookings /></>} />
+            <Route path="/manage-trains" element={<><Navbar /><ManageTrains /></>} />
+            <Route path="/manage-stations" element={<><Navbar /><ManageStations /></>} />
+            <Route path="/reports" element={<><Navbar /><ReportsAndInsights /></>} />
           </Routes>
         </main>
       </div>
