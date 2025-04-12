@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import logo from '../assets/logo2.webp';
 import { useNavigate } from 'react-router-dom';
-import Navbar from './Navbar';
+
 
 const DashboardCard = ({ title, description, href }) => (
     <a
@@ -331,9 +331,9 @@ const HomePage = () => {
                                 href="/LoginPage"
                             />
                             <DashboardCard
-                                title="Manage Booking"
-                                description="Modify or cancel your reservations."
-                                href="/LoginPage"
+                                title="Route Status"
+                                description="Find out the busiest routes."
+                                href="/busy-routes"
                             />
                         </div>
                     </section>

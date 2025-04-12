@@ -30,13 +30,13 @@ const Navbar = () => {
 
     return (
         <nav className="bg-gradient-to-r from-blue-900/90 to-indigo-900/90 backdrop-blur-sm text-white sticky top-0 z-50 shadow-lg border-b border-white/10">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6">
                 <div className="flex justify-between items-center h-16">
                     {/* Logo */}
                     <img
                         src={logo}
                         alt="Indian Railways Logo"
-                        className="h-9 w-auto object-contain mr-4"
+                        className="h-9 w-auto object-contain mr-0"
                     />
                     <div className="flex-shrink-0">
                         <Link to="/" className="text-xl font-bold hover:text-indigo-200 transition-colors duration-200">
@@ -45,24 +45,24 @@ const Navbar = () => {
                     </div>
 
                     {/* Desktop Menu */}
-                    <div className="hidden md:flex items-center space-x-6">
+                    <div className="hidden md:flex items-center space-x-8">
                         {/* Main Navigation */}
-                        <div className="flex space-x-2">
+                        <div className="flex space-x-1">
                             <NavItem to="/">Home</NavItem>
                             <NavItem to="/book-ticket">Book Ticket</NavItem>
                             <NavItem to="/my-bookings">My Bookings</NavItem>
                         </div>
 
                         {/* Quick Actions */}
-                        <div className="flex space-x-2 border-l border-indigo-700 pl-4">
+                        <div className="flex space-x-1 border-l border-indigo-700 pl-3">
                             <NavItem to="/pnr-status">PNR Status</NavItem>
                             <NavItem to="/seat-availability">Availability</NavItem>
-                            <NavItem to="/cancel-ticket">Cancel</NavItem>
+                            <NavItem to="/cancel-ticket">Ticket Cancellation</NavItem>
                         </div>
 
                         {/* Admin Section */}
                         {isAdmin && (
-                            <div className="flex space-x-2 border-l border-indigo-700 pl-4">
+                            <div className="flex space-x-1 border-l border-indigo-700 pl-3">
                                 <NavItem to="/manage-trains">Trains</NavItem>
                                 <NavItem to="/manage-stations">Stations</NavItem>
                                 <NavItem to="/reports">Reports</NavItem>
@@ -70,7 +70,7 @@ const Navbar = () => {
                         )}
 
                         {/* Auth Section */}
-                        <div className="flex space-x-2 border-l border-indigo-700 pl-4">
+                        <div className="flex space-x-1 border-l border-indigo-700 pl-3">
                             <NavItem to="/LoginPage">Login</NavItem>
                             <NavItem to="/SignupPage">Register</NavItem>
                             <button

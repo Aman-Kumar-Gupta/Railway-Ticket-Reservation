@@ -11,6 +11,9 @@ import MyBookings from './components/MyBookings';
 import ManageTrains from './components/ManageTrains';
 import ManageStations from './components/ManageStations';
 import ReportsAndInsights from './components/ReportsAndInsights';
+import UserProfile from './components/UserProfile';
+import BusyRoutes from './components/BusyRoutes';
+import PassengerList from './components/PassengerList';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 function App() {
@@ -31,6 +34,9 @@ function App() {
             <Route path="/manage-trains" element={<><Navbar /><ManageTrains /></>} />
             <Route path="/manage-stations" element={<><Navbar /><ManageStations /></>} />
             <Route path="/reports" element={<><Navbar /><ReportsAndInsights /></>} />
+            <Route path="/user-profile" element={<><Navbar /><UserProfile /></>} />
+            <Route path="/busy-routes" element={<><Navbar /><BusyRoutes /></>} />
+            <Route path="/passenger-list" element={<><Navbar /><PassengerList /></>} />
           </Routes>
         </main>
       </div>
