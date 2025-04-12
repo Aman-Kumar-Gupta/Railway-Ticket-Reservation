@@ -1,4 +1,4 @@
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import logo from '../assets/logo2.webp';
 import { useNavigate } from 'react-router-dom';
 import Navbar from './Navbar';
@@ -18,10 +18,16 @@ const HomePage = () => {
     const [searchType, setSearchType] = useState('stations'); // 'stations' or 'trainNumber'
     const [stations, setStations] = useState([]);
     const [trains, setTrains] = useState([]);
+    const [fromStation, setFromStation] = useState(0);
+    const [toStation, setToStation] = useState(0);
+    const [trainNumber, setTrainNumber] = useState('');
+    const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+    const token = localStorage.getItem('token');
 
+    // INITIAL fetch OF DATA
     useEffect(() => {
         const fun = async () => {
-            const token = localStorage.getItem('token');
+
             try {
                 const response = await fetch("http://localhost:3000/users/fetch", {
                     method: "GET",
@@ -40,8 +46,102 @@ const HomePage = () => {
         fun();
     }, []);
 
-    const handleClick = async () => {
 
+    const handleClick = async () => {
+        if (searchType === 'stations') {
+            // Handle station-based search
+            if (!fromStation || !toStation) {
+                alert('Please select both from and to stations');
+                return;
+            }
+            else if (fromStation === toStation) {
+                alert("Both stations cannot be same");
+                return;
+            }
+            else {
+                // FETCH DETAILS OF TRAIN BTW TWO STATIONS
+
+                console.log('Searching trains from:', fromStation, 'to:', toStation, 'on:', date);
+
+                // try {
+                //     const response = await fetch("http://localhost:3000/users/trains", {
+                //         method: "GET",
+                //         headers: {
+                //             "Authorization": `Bearer ${token}`,
+                //             "Content-Type": "application/json"
+                //         },
+                //     });
+                //     const res = await response.json();
+                //     setStations(res.stations);
+                //     setTrains(res.trains);
+                // } catch (error) {
+                //     console.error("Error:", error);
+                // }
+
+                try {
+                    const response = await fetch("http://localhost:3000/users/station", {
+                        method: "POST",
+                        headers: {
+                            "Authorization": `Bearer ${token}`,
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({ fromStation: fromStation, toStation: toStation, date: date }),
+                    });
+                    const data = await response.json();
+                    console.log(data);
+
+                } catch (error) {
+                    console.error("Error:", error);
+                }
+
+            }
+
+        } else if (searchType === 'trainNumber') {
+            // Handle train number search
+            if (!trainNumber) {
+
+                alert('Please enter a train number');
+                return;
+            }
+            else {
+
+                //FETCH DETAILS OF TRAIN WITH INPUT NUMBER
+                console.log('Searching for train:', trainNumber, 'on:', date);
+
+                try {
+                    const response = await fetch("http://localhost:3000/users/train", {
+                        method: "POST",
+                        headers: {
+                            "Authorization": `Bearer ${token}`,
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({ trainNumber: trainNumber, date: date }),
+                    });
+                    const data = await response.json();
+                    console.log(data);
+
+                } catch (error) {
+                    console.error("Error:", error);
+                }
+
+                // try {
+                //     const response = await fetch("http://localhost:3000/users/trains", {
+                //         method: "GET",
+                //         headers: {
+                //             "Authorization": `Bearer ${token}`,
+                //             "Content-Type": "application/json"
+                //         },
+                //     });
+                //     const res = await response.json();
+                //     setStations(res.stations);
+                //     setTrains(res.trains);
+                // } catch (error) {
+                //     console.error("Error:", error);
+                // }
+
+            }
+
+        }
     }
 
     return (
@@ -121,6 +221,8 @@ const HomePage = () => {
                                         </label>
                                         <select
                                             className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white/90"
+                                            value={fromStation}
+                                            onChange={(e) => setFromStation(e.target.value)}
                                         >
                                             <option value="">Select station</option>
                                             {stations.map(station => (
@@ -137,6 +239,8 @@ const HomePage = () => {
                                         </label>
                                         <select
                                             className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white/90"
+                                            value={toStation}
+                                            onChange={(e) => setToStation(e.target.value)}
                                         >
                                             <option value="">Select station</option>
                                             {stations.map(station => (
@@ -155,7 +259,8 @@ const HomePage = () => {
                                         </label>
                                         <input
                                             type="date"
-                                            defaultValue={new Date().toISOString().split('T')[0]}
+                                            value={date}
+                                            onChange={(e) => setDate(e.target.value)}
                                             className="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white/90"
                                         />
                                     </div>
@@ -172,7 +277,15 @@ const HomePage = () => {
                                         <label className="block text-sm font-medium text-gray-800 mb-1">
                                             Train Number
                                         </label>
-                                        <input type="text"  name="trainNumber" id="trainNumber" className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white/90" placeholder="Enter 5-digit train number" />
+                                        <input
+                                            type="text"
+                                            name="trainNumber"
+                                            id="trainNumber"
+                                            className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white/90"
+                                            placeholder="Enter 5-digit train number"
+                                            value={trainNumber}
+                                            onChange={(e) => setTrainNumber(e.target.value)}
+                                        />
                                     </div>
                                     {/* Date */}
                                     <div className="flex-1">
@@ -181,7 +294,8 @@ const HomePage = () => {
                                         </label>
                                         <input
                                             type="date"
-                                            defaultValue={new Date().toISOString().split('T')[0]}
+                                            value={date}
+                                            onChange={(e) => setDate(e.target.value)}
                                             className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white/90"
                                         />
                                     </div>
@@ -191,7 +305,10 @@ const HomePage = () => {
 
                         {/* Search Button */}
                         <div className="flex justify-center mt-6">
-                            <button className="bg-gradient-to-r from-blue-700 to-indigo-700 text-white px-8 py-3 rounded-lg font-semibold hover:from-blue-800 hover:to-indigo-800 transition shadow-lg hover:shadow-xl" onClick={handleClick()}>
+                            <button
+                                className="bg-gradient-to-r from-blue-700 to-indigo-700 text-white px-8 py-3 rounded-lg font-semibold hover:from-blue-800 hover:to-indigo-800 transition shadow-lg hover:shadow-xl"
+                                onClick={handleClick}
+                            >
                                 Search Trains
                             </button>
                         </div>
