@@ -1,23 +1,7 @@
-import React, { useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import logo from '../assets/logo2.webp';
 import { useNavigate } from 'react-router-dom';
 import Navbar from './Navbar';
-
-// Mock data for stations and trains
-const stations = [
-    { id: 1, name: 'Mumbai Central' },
-    { id: 2, name: 'Delhi Junction' },
-    { id: 3, name: 'Chennai Central' },
-    { id: 4, name: 'Howrah Junction' },
-    { id: 5, name: 'Bangalore City' }
-];
-
-const trains = [
-    { number: '12951', name: 'Rajdhani Express' },
-    { number: '12010', name: 'Shatabdi Express' },
-    { number: '12245', name: 'Duronto Express' },
-    { number: '12215', name: 'Garib Rath' }
-];
 
 const DashboardCard = ({ title, description, href }) => (
     <a
@@ -32,6 +16,33 @@ const DashboardCard = ({ title, description, href }) => (
 const UserDashboard = () => {
     const navigate = useNavigate();
     const [searchType, setSearchType] = useState('stations'); // 'stations' or 'trainNumber'
+    const [stations, setStations] = useState([]);
+    const [trains, setTrains] = useState([]);
+
+    useEffect(() => {
+        const fun = async () => {
+            const token = localStorage.getItem('token');
+            try {
+                const response = await fetch("http://localhost:3000/users/fetch", {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    },
+                });
+                const res = await response.json();
+                setStations(res.stations);
+                setTrains(res.trains);
+            } catch (error) {
+                console.error("Error:", error);
+            }
+        }
+        fun();
+    }, []);
+
+    const handleClick = async () => {
+
+    }
 
     return (
         <>
@@ -113,8 +124,8 @@ const UserDashboard = () => {
                                         >
                                             <option value="">Select station</option>
                                             {stations.map(station => (
-                                                <option key={station.id} value={station.id}>
-                                                    {station.name}
+                                                <option key={station.StationID} value={station.StationID}>
+                                                    {station.StationName}
                                                 </option>
                                             ))}
                                         </select>
@@ -129,8 +140,8 @@ const UserDashboard = () => {
                                         >
                                             <option value="">Select station</option>
                                             {stations.map(station => (
-                                                <option key={station.id} value={station.id}>
-                                                    {station.name}
+                                                <option key={station.StationID} value={station.StationID}>
+                                                    {station.StationName}
                                                 </option>
                                             ))}
                                         </select>
@@ -166,8 +177,8 @@ const UserDashboard = () => {
                                         >
                                             <option value="">Select train</option>
                                             {trains.map(train => (
-                                                <option key={train.number} value={train.number}>
-                                                    {train.number} - {train.name}
+                                                <option key={train.TrainNumber} value={train.TrainNumber}>
+                                                    {train.TrainNumber} - {train.TrainName}
                                                 </option>
                                             ))}
                                         </select>
@@ -189,7 +200,7 @@ const UserDashboard = () => {
 
                         {/* Search Button */}
                         <div className="flex justify-center mt-6">
-                            <button className="bg-gradient-to-r from-blue-700 to-indigo-700 text-white px-8 py-3 rounded-lg font-semibold hover:from-blue-800 hover:to-indigo-800 transition shadow-lg hover:shadow-xl">
+                            <button className="bg-gradient-to-r from-blue-700 to-indigo-700 text-white px-8 py-3 rounded-lg font-semibold hover:from-blue-800 hover:to-indigo-800 transition shadow-lg hover:shadow-xl" onClick={handleClick()}>
                                 Search Trains
                             </button>
                         </div>
