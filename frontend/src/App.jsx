@@ -1,11 +1,10 @@
 import './App.css'
 import LoginPage from './components/LoginPage'
-import UserDashboard from './components/UserDashboard';
+import HomePage from './components/HomePage';
 import SignupPage from './components/SignupPage';
 import Navbar from './components/Navbar';
 import BookTicket from './components/BookTicket';
 import PNRStatus from './components/PNRStatus';
-import TrainSchedule from './components/TrainSchedule';
 import SeatAvailability from './components/SeatAvailability';
 import CancelTicket from './components/CancelTicket';
 import MyBookings from './components/MyBookings';
@@ -21,12 +20,11 @@ function App() {
         {/* <Navbar /> */}
         <main className="main-content">
           <Routes>
-            <Route path="/" element={ <UserDashboard />} />
+            <Route path="/" element={ <HomePage />} />
             <Route path="/LoginPage" element={<LoginPage />} />
             <Route path="/SignupPage" element={<SignupPage />} />
             <Route path="/book-ticket" element={<><Navbar /><BookTicket /></>} />
             <Route path="/pnr-status" element={<><Navbar /><PNRStatus /></>} />
-            <Route path="/train-schedule" element={<><Navbar /><TrainSchedule /></>} />
             <Route path="/seat-availability" element={<><Navbar /><SeatAvailability /></>} />
             <Route path="/cancel-ticket" element={<><Navbar /><CancelTicket /></>} />
             <Route path="/my-bookings" element={<><Navbar /><MyBookings /></>} />

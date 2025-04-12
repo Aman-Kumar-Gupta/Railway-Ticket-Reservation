@@ -13,7 +13,7 @@ const DashboardCard = ({ title, description, href }) => (
     </a>
 );
 
-const UserDashboard = () => {
+const HomePage = () => {
     const navigate = useNavigate();
     const [searchType, setSearchType] = useState('stations'); // 'stations' or 'trainNumber'
     const [stations, setStations] = useState([]);
@@ -172,16 +172,7 @@ const UserDashboard = () => {
                                         <label className="block text-sm font-medium text-gray-800 mb-1">
                                             Train Number
                                         </label>
-                                        <select
-                                            className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white/90"
-                                        >
-                                            <option value="">Select train</option>
-                                            {trains.map(train => (
-                                                <option key={train.TrainNumber} value={train.TrainNumber}>
-                                                    {train.TrainNumber} - {train.TrainName}
-                                                </option>
-                                            ))}
-                                        </select>
+                                        <input type="text"  name="trainNumber" id="trainNumber" className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white/90" placeholder="Enter 5-digit train number" />
                                     </div>
                                     {/* Date */}
                                     <div className="flex-1">
@@ -215,17 +206,17 @@ const UserDashboard = () => {
                             <DashboardCard
                                 title="PNR Enquiry"
                                 description="Check the status of your ticket using your PNR."
-                                href="/pnr-enquiry"
+                                href="/pnr-status"
                             />
                             <DashboardCard
                                 title="Upcoming Trips"
                                 description="View and manage your booked journeys."
-                                href="/upcoming-trips"
+                                href="/LoginPage"
                             />
                             <DashboardCard
                                 title="Manage Booking"
                                 description="Modify or cancel your reservations."
-                                href="/manage-bookings"
+                                href="/LoginPage"
                             />
                         </div>
                     </section>
@@ -235,4 +226,4 @@ const UserDashboard = () => {
     );
 };
 
-export default UserDashboard;
+export default HomePage;

@@ -56,7 +56,6 @@ const Navbar = () => {
                         {/* Quick Actions */}
                         <div className="flex space-x-2 border-l border-indigo-700 pl-4">
                             <NavItem to="/pnr-status">PNR Status</NavItem>
-                            <NavItem to="/train-schedule">Schedule</NavItem>
                             <NavItem to="/seat-availability">Availability</NavItem>
                             <NavItem to="/cancel-ticket">Cancel</NavItem>
                         </div>
@@ -126,7 +125,6 @@ const Navbar = () => {
                     {/* Quick Actions */}
                     <div className="border-t border-indigo-700 pt-2 mt-2 space-y-1">
                         <MobileNavItem to="/pnr-status">PNR Status</MobileNavItem>
-                        <MobileNavItem to="/train-schedule">Train Schedule</MobileNavItem>
                         <MobileNavItem to="/seat-availability">Seat Availability</MobileNavItem>
                         <MobileNavItem to="/cancel-ticket">Cancel Ticket</MobileNavItem>
                     </div>
