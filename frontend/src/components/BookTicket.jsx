@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const BookTicket = () => {
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
     const [searchResults, setSearchResults] = useState([]);
     const [showPassengerForm, setShowPassengerForm] = useState(false);
     const [selectedTrain, setSelectedTrain] = useState(null);
