@@ -20,7 +20,7 @@ const HomePage = () => {
     const [trains, setTrains] = useState([]);
     const [fromStation, setFromStation] = useState(0);
     const [toStation, setToStation] = useState(0);
-    const [trainNumber, setTrainNumber] = useState('');
+    const [trainNumber, setTrainNumber] = useState(0);
     const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
     const token = localStorage.getItem('token');
 
@@ -60,24 +60,6 @@ const HomePage = () => {
             }
             else {
                 // FETCH DETAILS OF TRAIN BTW TWO STATIONS
-
-                console.log('Searching trains from:', fromStation, 'to:', toStation, 'on:', date);
-
-                // try {
-                //     const response = await fetch("http://localhost:3000/users/trains", {
-                //         method: "GET",
-                //         headers: {
-                //             "Authorization": `Bearer ${token}`,
-                //             "Content-Type": "application/json"
-                //         },
-                //     });
-                //     const res = await response.json();
-                //     setStations(res.stations);
-                //     setTrains(res.trains);
-                // } catch (error) {
-                //     console.error("Error:", error);
-                // }
-
                 try {
                     const response = await fetch("http://localhost:3000/users/station", {
                         method: "POST",
@@ -99,15 +81,13 @@ const HomePage = () => {
         } else if (searchType === 'trainNumber') {
             // Handle train number search
             if (!trainNumber) {
-
                 alert('Please enter a train number');
                 return;
             }
             else {
 
+                console.log(trainNumber, date);
                 //FETCH DETAILS OF TRAIN WITH INPUT NUMBER
-                console.log('Searching for train:', trainNumber, 'on:', date);
-
                 try {
                     const response = await fetch("http://localhost:3000/users/train", {
                         method: "POST",
@@ -123,21 +103,6 @@ const HomePage = () => {
                 } catch (error) {
                     console.error("Error:", error);
                 }
-
-                // try {
-                //     const response = await fetch("http://localhost:3000/users/trains", {
-                //         method: "GET",
-                //         headers: {
-                //             "Authorization": `Bearer ${token}`,
-                //             "Content-Type": "application/json"
-                //         },
-                //     });
-                //     const res = await response.json();
-                //     setStations(res.stations);
-                //     setTrains(res.trains);
-                // } catch (error) {
-                //     console.error("Error:", error);
-                // }
 
             }
 
