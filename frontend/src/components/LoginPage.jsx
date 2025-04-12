@@ -1,30 +1,30 @@
 import React from "react";
-
+import { useState } from 'react';
 const LoginPage = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (!email || !password) {
-            setError('Please fill in all fields');
-            return;
-        }
-        try {
-            const response = await fetch("http://localhost:5173/Login", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email: email, password: password }),
-            });
-            const data = await response.json();
-            if (data.token) {
-                console.log(token);
-            } else {
-                alert("Login failed: " + data.error);
-            }
-        } catch (error) {
-            console.error("Error:", error);
-        }
+        // e.preventDefault();
+        // if (!email || !password) {
+        //     setError('Please fill in all fields');
+        //     return;
+        // }
+        // try {
+        //     const response = await fetch("http://localhost:5173/Login", {
+        //         method: "POST",
+        //         headers: { "Content-Type": "application/json" },
+        //         body: JSON.stringify({ email: email, password: password }),
+        //     });
+        //     const data = await response.json();
+        //     if (data.token) {
+        //         console.log(token);
+        //     } else {
+        //         alert("Login failed: " + data.error);
+        //     }
+        // } catch (error) {
+        //     console.error("Error:", error);
+        // }
     };
 
     return (
