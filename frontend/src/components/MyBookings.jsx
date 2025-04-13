@@ -1,4 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import jsPDF from 'jspdf';
+import logo from '../assets/logo.jpg';
+import irctc from '../assets/IRCTC.jpg'
+import oip from '../assets/OIP.jpeg'
 
 const MyBookings = () => {
     const [activeTab, setActiveTab] = useState('upcoming');
@@ -7,10 +11,151 @@ const MyBookings = () => {
     const [userId, setUserId] = useState(""); // State to hold the userID input
     const [token] = useState("242734"); // Example token, you can adjust as needed
 
+    // Helper function to format currency
+    const formatCurrency = (amount) => {
+        return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    };
 
+    const generatePDF = (booking) => {
+        const doc = new jsPDF();
+
+        // Page setup
+        const margin = 10;
+        const pageWidth = doc.internal.pageSize.width;
+        const pageHeight = doc.internal.pageSize.height;
+
+        // Border
+        doc.setDrawColor(0, 0, 0);
+        doc.setLineWidth(1);
+        doc.rect(margin, margin, pageWidth - 2 * margin, pageHeight - 2 * margin);
+
+        // Header
+        doc.setFontSize(20);
+        const headerText = "Electronic Reservation Slip (ERS)";
+        const textWidth = doc.getTextWidth(headerText);
+        const xPosition = (pageWidth - textWidth) / 2;
+        const yPosition = margin + 15;
+        doc.text(headerText, xPosition, yPosition);
+        doc.setLineWidth(0.5);
+        doc.line(xPosition, yPosition + 2, xPosition + textWidth, yPosition + 2);
+
+        // Logos
+        const imgWidth = 30;
+        const imgHeight = 30;
+        doc.addImage(logo, 'PNG', margin + 5, yPosition - 12, imgWidth, imgHeight);
+        doc.addImage(irctc, 'PNG', pageWidth - margin - imgWidth - 5, yPosition - 12, imgWidth, imgHeight);
+
+        // Journey Info Section Title
+        doc.setFontSize(16);
+        const sectionTitle = "Journey Information";
+        const sectionTitleWidth = doc.getTextWidth(sectionTitle);
+        const sectionY = yPosition + 25;
+        doc.text(sectionTitle, (pageWidth - sectionTitleWidth) / 2, sectionY);
+        doc.line((pageWidth - sectionTitleWidth) / 2, sectionY + 2, (pageWidth + sectionTitleWidth) / 2, sectionY + 2);
+
+        let infoY = sectionY + 25;
+
+        // Source and Destination with arrow
+        doc.setFontSize(16);
+        doc.setFont(undefined, 'bold');
+
+        const sourceX = margin + 30;
+        const destX = pageWidth - margin - 80;
+
+        doc.text(booking.FromStation, sourceX, infoY);
+        doc.text(booking.ToStation, destX, infoY);
+
+        // Arrow image instead of triangle
+        const arrowStartX = sourceX + doc.getTextWidth(booking.FromStation) + 10;
+        const arrowEndX = destX - 10;
+        const arrowY = infoY - 7; // Slight vertical adjustment
+
+        // Line between source and destination
+        
+
+        // Add arrow image in center
+        const arrowImgWidth = 10;
+        const arrowImgHeight = 10;
+        const arrowImgX = (arrowStartX + arrowEndX - arrowImgWidth) / 2;
+        doc.addImage(oip, 'PNG', arrowImgX, arrowY, arrowImgWidth, arrowImgHeight);
+
+        infoY += 20;
+
+        // Reset font
+        doc.setFontSize(12);
+        doc.setFont(undefined, 'normal');
+
+        const col1X = margin + 10;
+        const col2X = pageWidth * 0.5;
+        const colWidth = (pageWidth * 0.5) - margin - 15;
+
+        const wrapText = (text, x, y, maxWidth) => {
+            const lines = doc.splitTextToSize(text, maxWidth);
+            doc.text(lines, x, y);
+            return lines.length;
+        };
+
+        // Row 1: Train and PNR
+        infoY += 12;
+        doc.setFont(undefined, 'bold');
+        doc.text("Train:", col1X, infoY);
+        doc.text("PNR:", col2X, infoY);
+        doc.setFont(undefined, 'normal');
+
+        const trainText = `${booking.TrainNumber} - ${booking.TrainName}`;
+        const lines1 = wrapText(trainText, col1X + 45, infoY, colWidth - 45);
+        wrapText(booking.PNRNumber, col2X + 45, infoY, colWidth - 45);
+        infoY += Math.max(0, (lines1 - 1) * 10);
+
+        // Row 2: Date and Class
+        infoY += 15;
+        doc.setFont(undefined, 'bold');
+        doc.text("Date of Journey:", col1X, infoY);
+        doc.text("Class:", col2X, infoY);
+        doc.setFont(undefined, 'normal');
+        const dateText = new Date(booking.JourneyDate).toLocaleDateString();
+        wrapText(dateText, col1X + 45, infoY, colWidth - 45);
+        wrapText(booking.ClassType, col2X + 45, infoY, colWidth - 45);
+
+        // Row 3: Fare and Status
+        infoY += 15;
+        doc.setFont(undefined, 'bold');
+        doc.text("Fare (INR):", col1X, infoY);
+        doc.text("Booking Status:", col2X, infoY);
+        doc.setFont(undefined, 'normal');
+        wrapText(`Rs. ${booking.FareAmount}`, col1X + 45, infoY, colWidth - 45);
+        const lines3 = wrapText(booking.BookingStatus, col2X + 45, infoY, colWidth - 45);
+        infoY += Math.max(0, (lines3 - 1) * 10);
+
+        // Travel Instructions
+        infoY += 25;
+        doc.setFontSize(12);
+        doc.setFont(undefined, 'bold');
+        doc.text("Important Instructions for Passengers:", margin + 10, infoY);
+        doc.setFont(undefined, 'normal');
+        doc.setFontSize(11);
+        doc.setTextColor(50);
+
+        const notes = [
+            "1. Arrive at the boarding station at least 30 minutes before departure.",
+            "2. Carry the original ID proof used during ticket booking.",
+            "3. This e-ticket is valid only for the train and date shown.",
+            "4. IRCTC refund/cancellation rules will apply as per policy.",
+            "5. Contact 139 for railway enquiry or assistance.",
+            "6. Keep your luggage secure. Avoid unauthorized agents.",
+            "7. Smoking, drinking, and carrying banned items is prohibited."
+        ];
+
+        const lineSpacing = 6;
+        notes.forEach((line, index) => {
+            doc.text(line, margin + 10, infoY + 10 + index * lineSpacing);
+        });
+
+        // Save PDF
+        doc.save(`ticket_${booking.PNRNumber}.pdf`);
+    };
 
     useEffect(() => {
-
         const dev = localStorage.getItem('p_id');
         setUserId(dev);
         if (!userId) return; // Don't fetch if no userID is entered
@@ -155,7 +300,7 @@ const MyBookings = () => {
                                     <div className="mt-6 flex justify-between items-center">
                                         <div className="text-sm text-gray-500">
                                             <p>Date: {new Date(booking.JourneyDate).toLocaleDateString()}</p>
-                                            <p>Class: {booking.ClassType} | Fare: ₹{booking.FareAmount}</p>
+                                            <p>Class: {booking.ClassType} | Fare: ₹ {formatCurrency(booking.FareAmount)}</p>
                                         </div>
                                         <div className="space-x-4">
                                             <button
@@ -166,9 +311,7 @@ const MyBookings = () => {
                                             </button>
                                             {activeTab === 'upcoming' && (
                                                 <button
-                                                    onClick={() => {
-                                                        // Download or cancel logic
-                                                    }}
+                                                    onClick={() => generatePDF(booking)}
                                                     className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
                                                 >
                                                     Download Ticket
