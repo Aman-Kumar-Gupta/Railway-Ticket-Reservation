@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import logo from '../assets/logo2.webp';
 import { useNavigate } from 'react-router-dom';
+import Navbar from "./Navbar";
 
 
 const DashboardCard = ({ title, description, href }) => (
@@ -14,104 +15,68 @@ const DashboardCard = ({ title, description, href }) => (
 );
 
 const HomePage = () => {
-    const navigate = useNavigate();
-    const [searchType, setSearchType] = useState('stations'); // 'stations' or 'trainNumber'
-    const [stations, setStations] = useState([]);
+    const [stationsrc, setStationsrc] = useState('');
+    const [stationout, setStationout] = useState('');
     const [trains, setTrains] = useState([]);
-    const [fromStation, setFromStation] = useState(0);
-    const [toStation, setToStation] = useState(0);
-    const [trainNumber, setTrainNumber] = useState(0);
-    const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
-    const token = localStorage.getItem('token');
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+    const [searchType, setSearchType] = useState('stations');
+    const [date, setDate] = useState('');
+    const [trainNumber, setTrainNumber] = useState('');
+    const [searched, setSearched] = useState(false);
 
-    // INITIAL fetch OF DATA
-    useEffect(() => {
-        const fun = async () => {
+    const stations = [
+        { StationID: 1, StationName: 'Mumbai Central' },
+        { StationID: 2, StationName: 'Delhi Junction' },
+        { StationID: 3, StationName: 'Chennai Central' },
+        { StationID: 4, StationName: 'Howrah Junction' },
+        { StationID: 5, StationName: 'Bangalore City' },
+        { StationID: 6, StationName: 'Secunderabad Junction' },
+        { StationID: 7, StationName: 'Ahmedabad Junction' },
+        { StationID: 8, StationName: 'Pune Junction' },
+        { StationID: 9, StationName: 'Jaipur Junction' },
+        { StationID: 10, StationName: 'Lucknow Junction' },
+        { StationID: 11, StationName: 'Patna Junction' },
+        { StationID: 12, StationName: 'Bhubaneswar Junction' },
+        { StationID: 13, StationName: 'Thiruvananthapuram Central' },
+        { StationID: 14, StationName: 'Guwahati Junction' },
+        { StationID: 15, StationName: 'Amritsar Junction' }
+    ];
 
-            try {
-                const response = await fetch("http://localhost:3000/users/fetch", {
-                    method: "GET",
-                    headers: {
-                        "Authorization": `Bearer ${token}`,
-                        "Content-Type": "application/json"
-                    },
-                });
-                const res = await response.json();
-                setStations(res.stations);
-                setTrains(res.trains);
-            } catch (error) {
-                console.error("Error:", error);
+    // Fetch trains based on source and destination stations or train number
+    const handleSearch = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        setError('');
+        setTrains([]);
+        setSearched(true);
+
+        try {
+            let url;
+            if (searchType === 'stations') {
+                url = `http://localhost:3000/find-trains?stationsrc=${encodeURIComponent(stationsrc)}&stationout=${encodeURIComponent(stationout)}`;
+            } else {
+                url = `http://localhost:3000/find-train-by-number?trainNumber=${encodeURIComponent(trainNumber)}`;
             }
+
+            const res = await fetch(url);
+            const data = await res.json();
+
+            if (!res.ok) {
+                throw new Error(data.error || 'Something went wrong');
+            }
+
+            setTrains(data);
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
         }
-        fun();
-    }, []);
-
-
-    const handleClick = async () => {
-        if (searchType === 'stations') {
-            // Handle station-based search
-            if (!fromStation || !toStation) {
-                alert('Please select both from and to stations');
-                return;
-            }
-            else if (fromStation === toStation) {
-                alert("Both stations cannot be same");
-                return;
-            }
-            else {
-                // FETCH DETAILS OF TRAIN BTW TWO STATIONS
-                try {
-                    const response = await fetch("http://localhost:3000/users/station", {
-                        method: "POST",
-                        headers: {
-                            "Authorization": `Bearer ${token}`,
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify({ fromStation: fromStation, toStation: toStation, date: date }),
-                    });
-                    const data = await response.json();
-                    console.log(data);
-
-                } catch (error) {
-                    console.error("Error:", error);
-                }
-
-            }
-
-        } else if (searchType === 'trainNumber') {
-            // Handle train number search
-            if (!trainNumber) {
-                alert('Please enter a train number');
-                return;
-            }
-            else {
-
-                console.log(trainNumber, date);
-                //FETCH DETAILS OF TRAIN WITH INPUT NUMBER
-                try {
-                    const response = await fetch("http://localhost:3000/users/train", {
-                        method: "POST",
-                        headers: {
-                            "Authorization": `Bearer ${token}`,
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify({ trainNumber: trainNumber, date: date }),
-                    });
-                    const data = await response.json();
-                    console.log(data);
-
-                } catch (error) {
-                    console.error("Error:", error);
-                }
-
-            }
-
-        }
-    }
+    };
 
     return (
         <>
-            {/* <Navbar /> */}
+
             <div className="min-h-screen w-full relative">
 
                 {/* Railway Background with Overlay */}
@@ -125,23 +90,8 @@ const HomePage = () => {
                     <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/50"></div>
                 </div>
 
-                {/* Header with Branding */}
-                <header className="w-full bg-gradient-to-r from-blue-900/90 to-indigo-900/90 backdrop-blur-sm shadow-lg relative z-10 border-b border-white/10">
-                    <div className="max-w-7xl mx-auto px-4 py-3 flex items-center">                    {/* Logo - replace '/path/to/ir-logo.png' with actual path */}
-                        <img
-                            src={logo}
-                            alt="Indian Railways Logo"
-                            className="h-9 w-auto object-contain mr-4"
-                        />
-                        <h1 className="text-white text-xl font-bold">Indian Railways</h1>
-                        <div className="ml-auto">
-                            <button className="text-white/90 hover:text-white font-semibold transition-colors hover:cursor-pointer" onClick={() => navigate('/LoginPage')}>
-                                Login / Signup
-                            </button>
-                        </div>
-                    </div>
-                </header>
 
+                <Navbar />
                 {/* Main Content */}
                 <main className="max-w-7xl mx-auto p-4 mt-6 space-y-8 relative z-10">
                     {/* Search Section */}
@@ -186,12 +136,12 @@ const HomePage = () => {
                                         </label>
                                         <select
                                             className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white/90"
-                                            value={fromStation}
-                                            onChange={(e) => setFromStation(e.target.value)}
+                                            value={stationsrc}
+                                            onChange={(e) => setStationsrc(e.target.value)}
                                         >
                                             <option value="">Select station</option>
                                             {stations.map(station => (
-                                                <option key={station.StationID} value={station.StationID}>
+                                                <option key={station.StationID} value={station.StationName}>
                                                     {station.StationName}
                                                 </option>
                                             ))}
@@ -204,32 +154,19 @@ const HomePage = () => {
                                         </label>
                                         <select
                                             className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white/90"
-                                            value={toStation}
-                                            onChange={(e) => setToStation(e.target.value)}
+                                            value={stationout}
+                                            onChange={(e) => setStationout(e.target.value)}
                                         >
                                             <option value="">Select station</option>
                                             {stations.map(station => (
-                                                <option key={station.StationID} value={station.StationID}>
+                                                <option key={station.StationID} value={station.StationName}>
                                                     {station.StationName}
                                                 </option>
                                             ))}
                                         </select>
                                     </div>
                                 </div>
-                                <div className="flex flex-col md:flex-row gap-4">
-                                    {/* Departure Date */}
-                                    <div className="flex-1">
-                                        <label className="block text-sm font-medium text-gray-800 mb-1">
-                                            Date
-                                        </label>
-                                        <input
-                                            type="date"
-                                            value={date}
-                                            onChange={(e) => setDate(e.target.value)}
-                                            className="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white/90"
-                                        />
-                                    </div>
-                                </div>
+
                             </div>
                         )}
 
@@ -253,17 +190,8 @@ const HomePage = () => {
                                         />
                                     </div>
                                     {/* Date */}
-                                    <div className="flex-1">
-                                        <label className="block text-sm font-medium text-gray-800 mb-1">
-                                            Date
-                                        </label>
-                                        <input
-                                            type="date"
-                                            value={date}
-                                            onChange={(e) => setDate(e.target.value)}
-                                            className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white/90"
-                                        />
-                                    </div>
+
+
                                 </div>
                             </div>
                         )}
@@ -272,12 +200,46 @@ const HomePage = () => {
                         <div className="flex justify-center mt-6">
                             <button
                                 className="bg-gradient-to-r from-blue-700 to-indigo-700 text-white px-8 py-3 rounded-lg font-semibold hover:from-blue-800 hover:to-indigo-800 transition shadow-lg hover:shadow-xl"
-                                onClick={handleClick}
+                                onClick={handleSearch}
                             >
                                 Search Trains
                             </button>
                         </div>
                     </div>
+
+                    {/* Train Results Table */}
+                    {trains.length > 0 ? (
+                        <div className="mt-8 bg-white/95 backdrop-blur-sm rounded-xl shadow-lg p-6 border border-white/20">
+                            <h2 className="text-2xl font-bold text-blue-700 mb-4">Available Trains</h2>
+                            <div className="overflow-x-auto">
+                                <table className="min-w-full divide-y divide-gray-200">
+                                    <thead className="bg-gray-50">
+                                        <tr>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Train Number</th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Train Name</th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Departure</th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Arrival</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="bg-white divide-y divide-gray-200">
+                                        {trains.map((train) => (
+                                            <tr key={train.TrainID} className="hover:bg-gray-50">
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{train.TrainNumber}</td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{train.TrainName}</td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{train.DepartureTime}</td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{train.ArrivalTime}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    ) : searched && (
+                        <div className="mt-8 bg-white/95 backdrop-blur-sm rounded-xl shadow-lg p-6 border border-white/20 text-center">
+                            <h2 className="text-2xl font-bold text-gray-700 mb-2">No Trains Available</h2>
+                            <p className="text-gray-500">Please try different stations or check back later.</p>
+                        </div>
+                    )}
 
                     {/* Quick Access Section */}
                     <section>

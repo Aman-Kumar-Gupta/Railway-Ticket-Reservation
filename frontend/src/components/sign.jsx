@@ -21,7 +21,7 @@ const SignupPage = () => {
             ...formData,
             [name]: value
         });
-        
+
         // Clear error when user starts typing
         if (errors[name]) {
             setErrors({
@@ -33,55 +33,55 @@ const SignupPage = () => {
 
     const validateForm = () => {
         const newErrors = {};
-        
+
         // First Name validation
         if (!formData.firstName.trim()) {
             newErrors.firstName = "First name is required";
         }
-        
+
         // Last Name validation
         if (!formData.lastName.trim()) {
             newErrors.lastName = "Last name is required";
         }
-        
+
         // Phone Number validation
         if (!formData.phoneNumber.trim()) {
             newErrors.phoneNumber = "Phone number is required";
         } else if (!/^\d{10}$/.test(formData.phoneNumber)) {
             newErrors.phoneNumber = "Please enter a valid 10-digit phone number";
         }
-        
+
         // Email validation
         if (!formData.email.trim()) {
             newErrors.email = "Email is required";
         } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
             newErrors.email = "Please enter a valid email address";
         }
-        
+
         // Password validation
         if (!formData.password) {
             newErrors.password = "Password is required";
         } else if (formData.password.length < 8) {
             newErrors.password = "Password must be at least 8 characters long";
         }
-        
+
         // Verify Password validation
         if (!formData.verifyPassword) {
             newErrors.verifyPassword = "Please confirm your password";
         } else if (formData.password !== formData.verifyPassword) {
             newErrors.verifyPassword = "Passwords do not match";
         }
-        
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        
+
         if (validateForm()) {
             setIsSubmitting(true);
-            
+
             // Simulate API call
             setTimeout(() => {
                 console.log("Form submitted:", formData);
@@ -98,7 +98,7 @@ const SignupPage = () => {
                 <div className="flex justify-center mb-6">
                     <img src={logo} alt="Indian Railways Logo" className="h-12 w-auto" />
                 </div>
-                
+
                 <h1 className="text-3xl font-bold text-center text-blue-700 mb-2">Create Account</h1>
                 <p className="text-sm text-gray-500 text-center mb-8">Join Indian Railways to book your journey</p>
 
@@ -115,9 +115,8 @@ const SignupPage = () => {
                                     value={formData.firstName}
                                     onChange={handleChange}
                                     placeholder="Enter your first name"
-                                    className={`w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 ${
-                                        errors.firstName ? "border-red-500" : ""
-                                    }`}
+                                    className={`w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 ${errors.firstName ? "border-red-500" : ""
+                                        }`}
                                 />
                                 {errors.firstName && <p className="mt-1 text-sm text-red-500">{errors.firstName}</p>}
                             </div>
@@ -131,13 +130,12 @@ const SignupPage = () => {
                                     value={formData.email}
                                     onChange={handleChange}
                                     placeholder="you@example.com"
-                                    className={`w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 ${
-                                        errors.email ? "border-red-500" : ""
-                                    }`}
+                                    className={`w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 ${errors.email ? "border-red-500" : ""
+                                        }`}
                                 />
                                 {errors.email && <p className="mt-1 text-sm text-red-500">{errors.email}</p>}
                             </div>
-                            
+
 
                             {/* Password */}
                             <div>
@@ -148,13 +146,12 @@ const SignupPage = () => {
                                     value={formData.password}
                                     onChange={handleChange}
                                     placeholder="Create a password"
-                                    className={`w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 ${
-                                        errors.password ? "border-red-500" : ""
-                                    }`}
+                                    className={`w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 ${errors.password ? "border-red-500" : ""
+                                        }`}
                                 />
                                 {errors.password && <p className="mt-1 text-sm text-red-500">{errors.password}</p>}
                             </div>
-                            
+
                         </div>
 
                         {/* Right Column */}
@@ -168,9 +165,8 @@ const SignupPage = () => {
                                     value={formData.lastName}
                                     onChange={handleChange}
                                     placeholder="Enter your last name"
-                                    className={`w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 ${
-                                        errors.lastName ? "border-red-500" : ""
-                                    }`}
+                                    className={`w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 ${errors.lastName ? "border-red-500" : ""
+                                        }`}
                                 />
                                 {errors.lastName && <p className="mt-1 text-sm text-red-500">{errors.lastName}</p>}
                             </div>
@@ -184,9 +180,8 @@ const SignupPage = () => {
                                     value={formData.phoneNumber}
                                     onChange={handleChange}
                                     placeholder="Enter your phone number"
-                                    className={`w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 ${
-                                        errors.phoneNumber ? "border-red-500" : ""
-                                    }`}
+                                    className={`w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 ${errors.phoneNumber ? "border-red-500" : ""
+                                        }`}
                                 />
                                 {errors.phoneNumber && <p className="mt-1 text-sm text-red-500">{errors.phoneNumber}</p>}
                             </div>
@@ -200,9 +195,8 @@ const SignupPage = () => {
                                     value={formData.verifyPassword}
                                     onChange={handleChange}
                                     placeholder="Confirm your password"
-                                    className={`w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 ${
-                                        errors.verifyPassword ? "border-red-500" : ""
-                                    }`}
+                                    className={`w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 ${errors.verifyPassword ? "border-red-500" : ""
+                                        }`}
                                 />
                                 {errors.verifyPassword && <p className="mt-1 text-sm text-red-500">{errors.verifyPassword}</p>}
                             </div>

@@ -134,7 +134,7 @@ router.post('/list_passengers_on_train', async function (req, res) {
 
     const [passengers] = await pool.query(
       `CALL list_passengers_on_train(?, ?)`,
-      [trainName, journeyDate]
+      [trainName, journeyDate ]
     );
 
     res.json({ success: true, data: passengers[0] });
@@ -157,6 +157,10 @@ router.get('/bookings', async (req, res) => {
     res.status(500).json({ error: 'Error fetching bookings' });
   }
 });
+
+
+
+
 
 
 module.exports = router;
