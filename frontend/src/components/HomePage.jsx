@@ -74,6 +74,55 @@ const HomePage = () => {
         }
     };
 
+    const generatePDF = (train) => {
+        const doc = new jsPDF();
+
+        // Add logo or header
+        doc.setFontSize(20);
+        doc.text('Indian Railways', 105, 20, { align: 'center' });
+        doc.setFontSize(12);
+        doc.text('E-Ticket / Journey Details', 105, 30, { align: 'center' });
+
+        // Add ticket details
+        doc.setFontSize(10);
+        const ticketDetails = [
+            ['PNR Number', Math.random().toString(36).substring(2, 10).toUpperCase()],
+            ['Train Number', train.TrainNumber],
+            ['Train Name', train.TrainName],
+            ['From', train.SourceStation],
+            ['To', train.DestinationStation],
+            ['Departure', train.DepartureTime],
+            ['Arrival', train.ArrivalTime],
+            ['Date', new Date().toLocaleDateString()],
+            ['Class', 'General'],
+            ['Fare', '₹500']
+        ];
+
+        // Add passenger details table
+        doc.autoTable({
+            startY: 50,
+            head: [['Ticket Details', '']],
+            body: ticketDetails,
+            theme: 'grid',
+            headStyles: { fillColor: [41, 128, 185] },
+            styles: { cellPadding: 5 }
+        });
+
+        // Add terms and conditions
+        doc.setFontSize(8);
+        doc.text('Terms and Conditions:', 14, doc.autoTable.previous.finalY + 20);
+        doc.text('1. This is a computer generated ticket and does not require any signature.', 14, doc.autoTable.previous.finalY + 30);
+        doc.text('2. Please carry a valid ID proof while traveling.', 14, doc.autoTable.previous.finalY + 35);
+        doc.text('3. Boarding point will be closed 5 minutes before departure.', 14, doc.autoTable.previous.finalY + 40);
+
+        // Save the PDF
+        doc.save(`ticket-${train.TrainNumber}.pdf`);
+    };
+
+    const handleDownloadTicket = (train) => {
+        generatePDF(train);
+    };
+
     return (
         <>
 
@@ -219,6 +268,7 @@ const HomePage = () => {
                                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Train Name</th>
                                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Departure</th>
                                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Arrival</th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody className="bg-white divide-y divide-gray-200">
@@ -228,6 +278,15 @@ const HomePage = () => {
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{train.TrainName}</td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{train.DepartureTime}</td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{train.ArrivalTime}</td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                    <button
+                                                        onClick={() => handleDownloadTicket(train)}
+                                                        className="bg-blue-600 text-white px-3 py-1 rounded-md hover:bg-blue-700 flex items-center gap-2"
+                                                    >
+                                                        <FaDownload />
+                                                        Download Ticket
+                                                    </button>
+                                                </td>
                                             </tr>
                                         ))}
                                     </tbody>
