@@ -1,64 +1,39 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const MyBookings = () => {
     const [activeTab, setActiveTab] = useState('upcoming');
+    const [bookings, setBookings] = useState({ upcoming: [], past: [] });
     const [selectedBooking, setSelectedBooking] = useState(null);
+    const userId = 1; // Replace this with the logged-in user's actual ID
 
-    // Sample bookings data
-    const bookings = {
-        upcoming: [
-            {
-                pnr: '1234567890',
-                trainNumber: '12345',
-                trainName: 'Rajdhani Express',
-                journeyDate: '2024-04-15',
-                fromStation: 'Delhi (DEL)',
-                toStation: 'Mumbai (BOM)',
-                class: '3A',
-                status: 'Confirmed',
-                passengers: 2,
-                totalFare: 2400,
-            },
-            {
-                pnr: '0987654321',
-                trainNumber: '54321',
-                trainName: 'Shatabdi Express',
-                journeyDate: '2024-04-20',
-                fromStation: 'Mumbai (BOM)',
-                toStation: 'Ahmedabad (ADI)',
-                class: 'CC',
-                status: 'Confirmed',
-                passengers: 1,
-                totalFare: 1200,
-            },
-        ],
-        past: [
-            {
-                pnr: '1122334455',
-                trainNumber: '67890',
-                trainName: 'Duronto Express',
-                journeyDate: '2024-03-01',
-                fromStation: 'Chennai (MAS)',
-                toStation: 'Bangalore (SBC)',
-                class: '2A',
-                status: 'Completed',
-                passengers: 1,
-                totalFare: 1500,
-            },
-            {
-                pnr: '5566778899',
-                trainNumber: '98765',
-                trainName: 'Garib Rath',
-                journeyDate: '2024-02-15',
-                fromStation: 'Kolkata (HWH)',
-                toStation: 'Delhi (DEL)',
-                class: 'SL',
-                status: 'Completed',
-                passengers: 3,
-                totalFare: 1800,
-            },
-        ],
-    };
+    useEffect(() => {
+        const fetchBookings = async () => {
+            try {
+                const res = await fetch(`http://localhost:3000/users/bookings`);
+                const data = await res.json();
+
+                // Split into upcoming and past
+                const today = new Date();
+                const upcoming = [];
+                const past = [];
+
+                data.forEach(booking => {
+                    const journeyDate = new Date(booking.journeyDate);
+                    if (journeyDate >= today) {
+                        upcoming.push(booking);
+                    } else {
+                        past.push(booking);
+                    }
+                });
+
+                setBookings({ upcoming, past });
+            } catch (error) {
+                console.error('Error fetching bookings:', error);
+            }
+        };
+
+        fetchBookings();
+    }, []);
 
     const getStatusColor = (status) => {
         switch (status.toLowerCase()) {
@@ -93,89 +68,87 @@ const MyBookings = () => {
                 <div className="bg-white rounded-2xl shadow-xl p-8 mb-8">
                     <div className="border-b border-gray-200">
                         <nav className="-mb-px flex space-x-8">
-                            <button
-                                onClick={() => setActiveTab('upcoming')}
-                                className={`${activeTab === 'upcoming'
-                                    ? 'border-blue-500 text-blue-600'
-                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                                    } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
-                            >
-                                Upcoming Journeys
-                            </button>
-                            <button
-                                onClick={() => setActiveTab('past')}
-                                className={`${activeTab === 'past'
-                                    ? 'border-blue-500 text-blue-600'
-                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                                    } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
-                            >
-                                Past Journeys
-                            </button>
+                            {['upcoming', 'past'].map(tab => (
+                                <button
+                                    key={tab}
+                                    onClick={() => setActiveTab(tab)}
+                                    className={`${activeTab === tab
+                                        ? 'border-blue-500 text-blue-600'
+                                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                                        } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
+                                >
+                                    {tab === 'upcoming' ? 'Upcoming Journeys' : 'Past Journeys'}
+                                </button>
+                            ))}
                         </nav>
                     </div>
 
                     {/* Bookings List */}
                     <div className="mt-8">
-                        {bookings[activeTab].map((booking) => (
-                            <div
-                                key={booking.pnr}
-                                className="bg-gray-50 rounded-xl p-6 mb-6 hover:shadow-md transition-shadow"
-                            >
-                                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                                    <div>
-                                        <p className="text-sm text-gray-500 mb-1">PNR Number</p>
-                                        <p className="text-lg font-semibold text-gray-900">{booking.pnr}</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-sm text-gray-500 mb-1">Train Details</p>
-                                        <p className="text-lg font-semibold text-gray-900">
-                                            {booking.trainName} ({booking.trainNumber})
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <p className="text-sm text-gray-500 mb-1">Journey</p>
-                                        <p className="text-lg font-semibold text-gray-900">
-                                            {booking.fromStation} → {booking.toStation}
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <p className="text-sm text-gray-500 mb-1">Status</p>
-                                        <span
-                                            className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(
-                                                booking.status
-                                            )}`}
-                                        >
-                                            {booking.status}
-                                        </span>
-                                    </div>
-                                </div>
-                                <div className="mt-6 flex justify-between items-center">
-                                    <div className="text-sm text-gray-500">
-                                        <p>Date: {booking.journeyDate}</p>
-                                        <p>Class: {booking.class} | Passengers: {booking.passengers}</p>
-                                        <p>Total Fare: ₹{booking.totalFare}</p>
-                                    </div>
-                                    <div className="space-x-4">
-                                        <button
-                                            onClick={() => handleViewDetails(booking)}
-                                            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-                                        >
-                                            View Details
-                                        </button>
-                                        {activeTab === 'upcoming' && (
-                                            <button
-                                                onClick={() => {
-                                                    // Handle download ticket
-                                                }}
-                                                className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
+                        {bookings[activeTab].length === 0 ? (
+                            <p className="text-center text-gray-500">No bookings found.</p>
+                        ) : (
+                            bookings[activeTab].map((booking) => (
+                                <div
+                                    key={booking.pnr}
+                                    className="bg-gray-50 rounded-xl p-6 mb-6 hover:shadow-md transition-shadow"
+                                >
+                                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                                        <div>
+                                            <p className="text-sm text-gray-500 mb-1">PNR Number</p>
+                                            <p className="text-lg font-semibold text-gray-900">{booking.pnr}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-sm text-gray-500 mb-1">Train Details</p>
+                                            <p className="text-lg font-semibold text-gray-900">
+                                                {booking.trainName} ({booking.trainNumber})
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <p className="text-sm text-gray-500 mb-1">Journey</p>
+                                            <p className="text-lg font-semibold text-gray-900">
+                                                {booking.fromStation} → {booking.toStation}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <p className="text-sm text-gray-500 mb-1">Status</p>
+                                            <span
+                                                className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(
+                                                    booking.status
+                                                )}`}
                                             >
-                                                Download Ticket
+                                                {booking.status}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div className="mt-6 flex justify-between items-center">
+                                        <div className="text-sm text-gray-500">
+                                            <p>Date: {booking.journeyDate}</p>
+                                            <p>Class: {booking.class} | Passengers: {booking.passengers}</p>
+                                            <p>Total Fare: ₹{booking.totalFare}</p>
+                                        </div>
+                                        <div className="space-x-4">
+                                            <button
+                                                onClick={() => handleViewDetails(booking)}
+                                                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                                            >
+                                                View Details
                                             </button>
-                                        )}
+                                            {activeTab === 'upcoming' && (
+                                                <button
+                                                    onClick={() => {
+                                                        // Download or cancel logic
+                                                    }}
+                                                    className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
+                                                >
+                                                    Download Ticket
+                                                </button>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        ))}
+                            ))
+                        )}
                     </div>
                 </div>
 
@@ -204,18 +177,6 @@ const MyBookings = () => {
                                             {selectedBooking.trainName} ({selectedBooking.trainNumber})
                                         </p>
                                     </div>
-                                    <div className="bg-gray-50 rounded-xl p-4">
-                                        <p className="text-sm text-gray-500 mb-1">Journey</p>
-                                        <p className="text-lg font-semibold text-gray-900">
-                                            {selectedBooking.fromStation} → {selectedBooking.toStation}
-                                        </p>
-                                    </div>
-                                    <div className="bg-gray-50 rounded-xl p-4">
-                                        <p className="text-sm text-gray-500 mb-1">Date & Class</p>
-                                        <p className="text-lg font-semibold text-gray-900">
-                                            {selectedBooking.journeyDate} | {selectedBooking.class}
-                                        </p>
-                                    </div>
                                 </div>
                                 <div className="bg-gray-50 rounded-xl p-4">
                                     <p className="text-sm text-gray-500 mb-1">Status</p>
@@ -228,10 +189,8 @@ const MyBookings = () => {
                                     </span>
                                 </div>
                                 <div className="bg-gray-50 rounded-xl p-4">
-                                    <p className="text-sm text-gray-500 mb-1">Fare Details</p>
-                                    <p className="text-lg font-semibold text-gray-900">
-                                        Total Fare: ₹{selectedBooking.totalFare}
-                                    </p>
+                                    <p className="text-sm text-gray-500 mb-1">Fare</p>
+                                    <p className="text-lg font-semibold text-gray-900">₹{selectedBooking.totalFare}</p>
                                 </div>
                             </div>
                         </div>
@@ -242,4 +201,4 @@ const MyBookings = () => {
     );
 };
 
-export default MyBookings; 
+export default MyBookings;

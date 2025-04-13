@@ -9,7 +9,6 @@ router.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-
 /* GET users listing. */
 router.get('/', function (req, res, next) {
   res.send('respond with a resource');
@@ -86,11 +85,48 @@ router.post('/station', async function (req, res) {
 });
 
 
-// FETCH TRAIN details
 router.post('/train', async function (req, res) {
   const { trainNumber, date } = req.body;
   res.status(500).json("to do");
 });
+
+
+// FOR CANCELLING TICKET
+router.post('/cancel_ticket', async function (req, res) {
+
+  try {
+    const { pnr } = req.body;
+    const [result] = await pool.query(`CALL cancel_ticket(?)`, [pnr]);
+    res.json({ success: true, message: result[0]?.Message || 'Cancelled' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+
+});
+
+
+// FOR LISTING PASSENGERS IN A TRAIN ON DATE
+router.post('/list_passengers_on_train', async function (req, res) {
+
+  try {
+    const { trainName, journeyDate } = req.query;
+
+    const [passengers] = await pool.query(
+      `CALL list_passengers_on_train(?, ?)`,
+      [trainName, journeyDate]
+    );
+
+    res.json({ success: true, data: passengers[0] });
+  } catch (err) {
+    console.error('Error fetching passengers:', err);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+
+});
+
+
+
 
 // FETCH LIST OF ALL STATIONS AND TRAINS IN THE DB
 router.get('/fetch', async function (req, res) {
@@ -110,5 +146,19 @@ router.get('/fetch', async function (req, res) {
     res.status(500).json({ error: 'Failed to fetch data' });
   }
 });
+
+
+// GET /api/bookings/:userId
+router.get('/bookings/:userId', async (req, res) => {
+  const userId = req.params.userId;
+  try {
+    const [results] = await pool.query('CALL get_user_bookings(?)', [userId]);
+    res.json(results[0]); // assuming the result set is in results[0]
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error fetching bookings' });
+  }
+});
+
 
 module.exports = router;
