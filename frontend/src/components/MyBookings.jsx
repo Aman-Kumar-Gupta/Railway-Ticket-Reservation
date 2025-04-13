@@ -4,21 +4,35 @@ const MyBookings = () => {
     const [activeTab, setActiveTab] = useState('upcoming');
     const [bookings, setBookings] = useState({ upcoming: [], past: [] });
     const [selectedBooking, setSelectedBooking] = useState(null);
-    const userId = 1; // Replace this with the logged-in user's actual ID
+    const [userId, setUserId] = useState(""); // State to hold the userID input
+    const [token] = useState("242734"); // Example token, you can adjust as needed
+
+
 
     useEffect(() => {
+
+        const dev = localStorage.getItem('p_id');
+        setUserId(dev);
+        if (!userId) return; // Don't fetch if no userID is entered
+
         const fetchBookings = async () => {
             try {
-                const res = await fetch(`http://localhost:3000/users/bookings`);
+                const res = await fetch(`http://localhost:3000/users/bookings/${userId}`, {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    },
+                });
                 const data = await res.json();
+                console.log("Fetched Data:", data);
 
-                // Split into upcoming and past
                 const today = new Date();
                 const upcoming = [];
                 const past = [];
 
                 data.forEach(booking => {
-                    const journeyDate = new Date(booking.journeyDate);
+                    const journeyDate = new Date(booking.JourneyDate);
                     if (journeyDate >= today) {
                         upcoming.push(booking);
                     } else {
@@ -33,7 +47,7 @@ const MyBookings = () => {
         };
 
         fetchBookings();
-    }, []);
+    }, [userId, token]); // Run when userId or token changes
 
     const getStatusColor = (status) => {
         switch (status.toLowerCase()) {
@@ -64,6 +78,23 @@ const MyBookings = () => {
                     <p className="text-lg text-gray-600">View and manage your train bookings</p>
                 </div>
 
+                {/* User ID Input Box */}
+                <div className="mb-8">
+                    <input
+                        type="text"
+                        value={userId}
+                        onChange={(e) => setUserId(e.target.value)}
+                        placeholder="Enter your User ID"
+                        className="border border-gray-300 px-4 py-2 rounded-md w-1/4 mx-auto"
+                    />
+                    <button
+                        onClick={() => setUserId(userId)}
+                        className="bg-blue-600 text-white px-4 py-2 rounded-lg ml-4"
+                    >
+                        Fetch Bookings
+                    </button>
+                </div>
+
                 {/* Tabs */}
                 <div className="bg-white rounded-2xl shadow-xl p-8 mb-8">
                     <div className="border-b border-gray-200">
@@ -90,42 +121,41 @@ const MyBookings = () => {
                         ) : (
                             bookings[activeTab].map((booking) => (
                                 <div
-                                    key={booking.pnr}
+                                    key={booking.TicketID}
                                     className="bg-gray-50 rounded-xl p-6 mb-6 hover:shadow-md transition-shadow"
                                 >
                                     <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                                         <div>
                                             <p className="text-sm text-gray-500 mb-1">PNR Number</p>
-                                            <p className="text-lg font-semibold text-gray-900">{booking.pnr}</p>
+                                            <p className="text-lg font-semibold text-gray-900">{booking.PNRNumber}</p>
                                         </div>
                                         <div>
                                             <p className="text-sm text-gray-500 mb-1">Train Details</p>
                                             <p className="text-lg font-semibold text-gray-900">
-                                                {booking.trainName} ({booking.trainNumber})
+                                                {booking.TrainName} ({booking.TrainNumber})
                                             </p>
                                         </div>
                                         <div>
                                             <p className="text-sm text-gray-500 mb-1">Journey</p>
                                             <p className="text-lg font-semibold text-gray-900">
-                                                {booking.fromStation} → {booking.toStation}
+                                                {booking.FromStation} → {booking.ToStation}
                                             </p>
                                         </div>
                                         <div>
                                             <p className="text-sm text-gray-500 mb-1">Status</p>
                                             <span
                                                 className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(
-                                                    booking.status
+                                                    booking.BookingStatus
                                                 )}`}
                                             >
-                                                {booking.status}
+                                                {booking.BookingStatus}
                                             </span>
                                         </div>
                                     </div>
                                     <div className="mt-6 flex justify-between items-center">
                                         <div className="text-sm text-gray-500">
-                                            <p>Date: {booking.journeyDate}</p>
-                                            <p>Class: {booking.class} | Passengers: {booking.passengers}</p>
-                                            <p>Total Fare: ₹{booking.totalFare}</p>
+                                            <p>Date: {new Date(booking.JourneyDate).toLocaleDateString()}</p>
+                                            <p>Class: {booking.ClassType} | Fare: ₹{booking.FareAmount}</p>
                                         </div>
                                         <div className="space-x-4">
                                             <button
@@ -169,12 +199,12 @@ const MyBookings = () => {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="bg-gray-50 rounded-xl p-4">
                                         <p className="text-sm text-gray-500 mb-1">PNR Number</p>
-                                        <p className="text-lg font-semibold text-gray-900">{selectedBooking.pnr}</p>
+                                        <p className="text-lg font-semibold text-gray-900">{selectedBooking.PNRNumber}</p>
                                     </div>
                                     <div className="bg-gray-50 rounded-xl p-4">
                                         <p className="text-sm text-gray-500 mb-1">Train Details</p>
                                         <p className="text-lg font-semibold text-gray-900">
-                                            {selectedBooking.trainName} ({selectedBooking.trainNumber})
+                                            {selectedBooking.TrainName} ({selectedBooking.TrainNumber})
                                         </p>
                                     </div>
                                 </div>
@@ -182,15 +212,11 @@ const MyBookings = () => {
                                     <p className="text-sm text-gray-500 mb-1">Status</p>
                                     <span
                                         className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(
-                                            selectedBooking.status
+                                            selectedBooking.BookingStatus
                                         )}`}
                                     >
-                                        {selectedBooking.status}
+                                        {selectedBooking.BookingStatus}
                                     </span>
-                                </div>
-                                <div className="bg-gray-50 rounded-xl p-4">
-                                    <p className="text-sm text-gray-500 mb-1">Fare</p>
-                                    <p className="text-lg font-semibold text-gray-900">₹{selectedBooking.totalFare}</p>
                                 </div>
                             </div>
                         </div>
