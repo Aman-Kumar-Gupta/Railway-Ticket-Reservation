@@ -2,19 +2,12 @@ import React, { useState } from 'react';
 
 const SeatAvailability = () => {
     const [formData, setFormData] = useState({
-        trainNumber: '',
+        source: '',
+        destination: '',
         date: '',
-        class: '',
     });
     const [availability, setAvailability] = useState(null);
     const [error, setError] = useState('');
-
-    const classTypes = [
-        { id: 'SL', name: 'Sleeper', icon: '🛏️' },
-        { id: '3A', name: 'AC 3 Tier', icon: '❄️' },
-        { id: '2A', name: 'AC 2 Tier', icon: '❄️' },
-        { id: '1A', name: 'First Class AC', icon: '❄️' },
-    ];
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -24,51 +17,39 @@ const SeatAvailability = () => {
         }));
     };
 
-    const handleSearch = (e) => {
+    const handleSearch = async (e) => {
         e.preventDefault();
         setError('');
+        setAvailability(null);
 
-        // Validate inputs
-        if (!/^\d{5}$/.test(formData.trainNumber)) {
-            setError('Please enter a valid 5-digit train number');
-            return;
-        }
-        if (!formData.date) {
-            setError('Please select a date');
-            return;
-        }
-        if (!formData.class) {
-            setError('Please select a class');
+        const { source, destination, date } = formData;
+
+        if (!source || !destination || !date) {
+            setError('Please fill in all fields');
             return;
         }
 
-        // Simulate API call with sample data
-        setAvailability({
-            trainNumber: formData.trainNumber,
-            trainName: 'Rajdhani Express',
-            date: formData.date,
-            class: formData.class,
-            totalSeats: 72,
-            availableSeats: 24,
-            bookedSeats: 48,
-            racCount: 12,
-            waitlistCount: 8,
-            fare: {
-                SL: 500,
-                '3A': 1200,
-                '2A': 1800,
-                '1A': 2500,
-            }[formData.class],
-            quota: 'General',
-            lastUpdated: new Date().toLocaleString(),
-        });
-    };
+        try {
+            const response = await fetch('http://localhost:3000/users/find_available', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ source, destination, date }),
+            });
 
-    const getAvailabilityColor = (available, total) => {
-        const percentage = (available / total) * 100;
-        if (percentage > 50) return 'text-green-600';
-        if (percentage > 20) return 'text-yellow-600';
-        return 'text-red-600';
+            const data = await response.json();
+            console.log(data);
+
+            if (response.ok) {
+                setAvailability(data);
+            } else {
+                setError(data.message || 'No availability found');
+            }
+        } catch (err) {
+            setError('Error fetching availability');
+            console.error(err);
+        }
     };
 
     return (
@@ -79,63 +60,50 @@ const SeatAvailability = () => {
                     <p className="text-lg text-gray-600">Check seat availability for your journey</p>
                 </div>
 
-                {/* Search Form */}
-                <div className="bg-white rounded-2xl shadow-xl p-8 mb-8 transform transition-all duration-300 hover:shadow-2xl">
+                {/* Form */}
+                <div className="bg-white rounded-2xl shadow-xl p-8 mb-8">
                     <form onSubmit={handleSearch} className="space-y-6">
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div className="relative">
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Train Number
-                                </label>
-                                <div className="relative">
-                                    <input
-                                        type="text"
-                                        name="trainNumber"
-                                        value={formData.trainNumber}
-                                        onChange={handleInputChange}
-                                        placeholder="Enter 5-digit train number"
-                                        className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition-colors"
-                                        maxLength={5}
-                                        required
-                                    />
-                                    <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                                        <span className="text-gray-500">🚂</span>
-                                    </div>
-                                </div>
-                            </div>
-
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Date
+                                    Source Station
+                                </label>
+                                <input
+                                    type="text"
+                                    name="source"
+                                    value={formData.source}
+                                    onChange={handleInputChange}
+                                    placeholder="e.g., Mumbai"
+                                    className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500"
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Destination Station
+                                </label>
+                                <input
+                                    type="text"
+                                    name="destination"
+                                    value={formData.destination}
+                                    onChange={handleInputChange}
+                                    placeholder="e.g., Delhi"
+                                    className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500"
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Journey Date
                                 </label>
                                 <input
                                     type="date"
                                     name="date"
                                     value={formData.date}
                                     onChange={handleInputChange}
-                                    className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition-colors"
+                                    className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500"
                                     required
                                 />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Class
-                                </label>
-                                <select
-                                    name="class"
-                                    value={formData.class}
-                                    onChange={handleInputChange}
-                                    className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition-colors"
-                                    required
-                                >
-                                    <option value="">Select Class</option>
-                                    {classTypes.map((classType) => (
-                                        <option key={classType.id} value={classType.id}>
-                                            {classType.icon} {classType.name}
-                                        </option>
-                                    ))}
-                                </select>
                             </div>
                         </div>
 
@@ -156,76 +124,34 @@ const SeatAvailability = () => {
 
                 {/* Availability Results */}
                 {availability && (
-                    <div className="bg-white rounded-2xl shadow-xl p-8 transform transition-all duration-300">
-                        <div className="space-y-8">
-                            {/* Train Summary */}
-                            <div className="border-b pb-6">
-                                <h2 className="text-2xl font-bold text-gray-900 mb-6">Train Details</h2>
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                    <div className="bg-gray-50 rounded-xl p-4">
-                                        <p className="text-sm text-gray-500 mb-1">Train Number</p>
-                                        <p className="text-lg font-semibold text-gray-900">{availability.trainNumber}</p>
+                    <div className="bg-white rounded-2xl shadow-xl p-8">
+                        <h2 className="text-2xl font-bold text-gray-900 mb-6">Available Trains</h2>
+                        {availability.length === 0 ? (
+                            <p className="text-center text-gray-500">No trains available for the selected route and date.</p>
+                        ) : (
+                            <div className="space-y-6">
+                                {availability.map((train, idx) => (
+                                    <div key={idx} className="border p-4 rounded-xl shadow-sm bg-gray-50">
+                                        <div className="flex justify-between items-center">
+                                            <div>
+                                                <h3 className="text-xl font-semibold">{train.TrainName}</h3>
+                                                <p className="text-sm text-gray-600">Seat: {train.SeatNumber}</p>
+                                            </div>
+                                            <div className="text-right">
+                                                <p className="text-sm text-gray-500">
+                                                    Date: {new Date(train.JourneyDate).toISOString().split('T')[0]}
+                                                </p>
+                                                <p className="text-sm text-gray-500">Class: {train.ClassType}</p>
+                                            </div>
+                                        </div>
+                                        <div className="mt-4 grid grid-cols-2 md:grid-cols-3 gap-4 text-sm text-gray-700">
+                                            <p><strong>Status:</strong> {train.AvailabilityStatus}</p>
+                                            <p><strong>Fare:</strong> ₹{train.Fare}</p>
+                                        </div>
                                     </div>
-                                    <div className="bg-gray-50 rounded-xl p-4">
-                                        <p className="text-sm text-gray-500 mb-1">Train Name</p>
-                                        <p className="text-lg font-semibold text-gray-900">{availability.trainName}</p>
-                                    </div>
-                                    <div className="bg-gray-50 rounded-xl p-4">
-                                        <p className="text-sm text-gray-500 mb-1">Journey Date</p>
-                                        <p className="text-lg font-semibold text-gray-900">{availability.date}</p>
-                                    </div>
-                                </div>
+                                ))}
                             </div>
-
-                            {/* Availability Summary */}
-                            <div className="border-b pb-6">
-                                <h2 className="text-2xl font-bold text-gray-900 mb-6">Availability Summary</h2>
-                                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                                    <div className="bg-gray-50 rounded-xl p-4">
-                                        <p className="text-sm text-gray-500 mb-1">Total Seats</p>
-                                        <p className="text-lg font-semibold text-gray-900">{availability.totalSeats}</p>
-                                    </div>
-                                    <div className="bg-gray-50 rounded-xl p-4">
-                                        <p className="text-sm text-gray-500 mb-1">Available Seats</p>
-                                        <p className={`text-lg font-semibold ${getAvailabilityColor(availability.availableSeats, availability.totalSeats)}`}>
-                                            {availability.availableSeats}
-                                        </p>
-                                    </div>
-                                    <div className="bg-gray-50 rounded-xl p-4">
-                                        <p className="text-sm text-gray-500 mb-1">RAC Count</p>
-                                        <p className="text-lg font-semibold text-yellow-600">{availability.racCount}</p>
-                                    </div>
-                                    <div className="bg-gray-50 rounded-xl p-4">
-                                        <p className="text-sm text-gray-500 mb-1">Waitlist Count</p>
-                                        <p className="text-lg font-semibold text-red-600">{availability.waitlistCount}</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Additional Information */}
-                            <div>
-                                <h2 className="text-2xl font-bold text-gray-900 mb-6">Additional Information</h2>
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                    <div className="bg-gray-50 rounded-xl p-4">
-                                        <p className="text-sm text-gray-500 mb-1">Class</p>
-                                        <p className="text-lg font-semibold text-gray-900">
-                                            {classTypes.find(c => c.id === availability.class)?.name}
-                                        </p>
-                                    </div>
-                                    <div className="bg-gray-50 rounded-xl p-4">
-                                        <p className="text-sm text-gray-500 mb-1">Fare</p>
-                                        <p className="text-lg font-semibold text-gray-900">₹{availability.fare}</p>
-                                    </div>
-                                    <div className="bg-gray-50 rounded-xl p-4">
-                                        <p className="text-sm text-gray-500 mb-1">Quota</p>
-                                        <p className="text-lg font-semibold text-gray-900">{availability.quota}</p>
-                                    </div>
-                                </div>
-                                <div className="mt-6 text-sm text-gray-500 text-right">
-                                    Last Updated: {availability.lastUpdated}
-                                </div>
-                            </div>
-                        </div>
+                        )}
                     </div>
                 )}
             </div>
@@ -233,4 +159,4 @@ const SeatAvailability = () => {
     );
 };
 
-export default SeatAvailability; 
+export default SeatAvailability;

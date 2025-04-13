@@ -111,12 +111,13 @@ router.get('/', function (req, res, next) {
 // });
 
 
+
 // FOR CANCELLING TICKET
 router.post('/cancel_ticket', async function (req, res) {
 
   try {
     const { pnr } = req.body;
-    const [result] = await pool.query(`CALL cancel_ticket(?)`, [pnr]);
+    const [result] = await pool.query(`call cancel_ticket(?)`, [pnr]);
     res.json({ success: true, message: result[0]?.Message || 'Cancelled' });
   } catch (err) {
     console.error(err);
@@ -126,6 +127,85 @@ router.post('/cancel_ticket', async function (req, res) {
 });
 
 
+// BOOK TICKET
+
+router.post('/book_ticket', async function (req, res) {
+  try {
+
+
+    const {
+      p_age,
+      p_class_type,
+      p_concession_category,
+      p_gender,
+      p_journey_date,
+      p_name,
+      p_payment_mode,
+      p_train_number
+    } = req.body;
+
+    const [result] = await pool.query(
+      `CALL book_ticket(?, ?, ?, ?, ?, ?, ?, ?)`,
+      [p_name,
+        p_age,
+        p_gender,
+        p_concession_category,
+        p_train_number,
+        p_class_type,
+        p_journey_date,
+        p_payment_mode
+      ]
+    );
+
+    console.log(result[0][0]);
+    res.json({
+      success: true,
+      message: result[0][0]?.Message || 'Ticket booked successfully',
+      pnr: result[0][0]?.PNR || null,
+      p_id: result[0][0]?.passenger_id || null,
+    });
+  } catch (err) {
+    console.error('Error booking ticket:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// GET /api/bookings/:userId
+router.get('/bookings/:userId', async (req, res) => {
+
+  const userId = req.params.userId;
+  // const userId = req.params.userId;
+  try {
+    const [results] = await pool.query('CALL get_user_bookings(?)', [userId]);
+    console.log(results[0]);
+    res.json(results[0]); // assuming the result set is in results[0]
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error fetching bookings' });
+  }
+
+});
+
+
+/// DATA AVAILABILIOTY
+
+router.post('/find_available', async (req, res) => {
+  console.log("s");
+  const { source, destination, date } = req.body;
+  console.log(source, destination, date);
+  try {
+    const [rows] = await pool.query("CALL findavailable(?, ?, ?)", [source, destination, date]);
+
+    console.log(rows[0]);
+
+    res.json(rows[0]); // Assuming first result set contains the data
+
+  } catch (err) {
+    console.error('Error calling find_available:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 // FOR LISTING PASSENGERS IN A TRAIN ON DATE
 router.post('/list_passengers_on_train', async function (req, res) {
 
@@ -134,7 +214,7 @@ router.post('/list_passengers_on_train', async function (req, res) {
 
     const [passengers] = await pool.query(
       `CALL list_passengers_on_train(?, ?)`,
-      [trainName, journeyDate ]
+      [trainName, journeyDate]
     );
 
     res.json({ success: true, data: passengers[0] });
@@ -143,19 +223,6 @@ router.post('/list_passengers_on_train', async function (req, res) {
     res.status(500).json({ success: false, message: 'Server error' });
   }
 
-});
-
-
-// GET /api/bookings/:userId
-router.get('/bookings', async (req, res) => {
-  const userId = req.params.userId;
-  try {
-    const [results] = await pool.query('CALL get_user_bookings(?)', [userId]);
-    res.json(results[0]); // assuming the result set is in results[0]
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Error fetching bookings' });
-  }
 });
 
 
