@@ -1,231 +1,130 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 const BookTicket = () => {
-    // const navigate = useNavigate();
-    const [searchResults, setSearchResults] = useState([]);
-    const [showPassengerForm, setShowPassengerForm] = useState(false);
-    const [selectedTrain, setSelectedTrain] = useState(null);
+    const [showPassengerForm, setShowPassengerForm] = useState(true);
 
-    // Sample stations data - replace with actual API call
-    const stations = [
-        { id: 1, name: 'Delhi' },
-        { id: 2, name: 'Mumbai' },
-        { id: 3, name: 'Chennai' },
-        { id: 4, name: 'Kolkata' },
-        { id: 5, name: 'Bangalore' },
+    const trains = [
+        { number: '12951', name: 'Rajdhani Express' },
+        { number: '23456', name: 'Mumbai Mail' },
+        { number: '34567', name: 'Kolkata Superfast' },
+        { number: '45678', name: 'Delhi Rajdhani' },
     ];
 
     const classTypes = [
         { id: 'SL', name: 'Sleeper' },
-        { id: '3A', name: 'AC 3 Tier' },
-        { id: '2A', name: 'AC 2 Tier' },
-        { id: '1A', name: 'First Class AC' },
+        { id: '3A', name: 'AC 3-tier' },
+        { id: '2A', name: 'AC 2-tier' },
+        { id: '1A', name: 'First Class' },
+        { id: '2S', name: 'Second Class' },
     ];
 
-    const handleSearch = (e) => {
-        e.preventDefault();
-        // Simulate API call with sample data
-        setSearchResults([
-            {
-                id: 1,
-                trainNumber: '12345',
-                trainName: 'Rajdhani Express',
-                departureTime: '08:00',
-                arrivalTime: '20:00',
-                duration: '12h',
-                fare: {
-                    SL: 500,
-                    '3A': 1200,
-                    '2A': 1800,
-                    '1A': 2500,
-                },
-                availability: {
-                    SL: 20,
-                    '3A': 15,
-                    '2A': 10,
-                    '1A': 5,
-                },
-            },
-            // Add more sample trains
-        ]);
+    const paymentModes = [
+        'Credit Card',
+        'Debit Card',
+        'UPI',
+        'Net Banking',
+        'Cash',
+    ];
+
+    const [formData, setFormData] = useState({
+        p_name: '',
+        p_age: '',
+        p_gender: '',
+        p_concession_category: 'none',
+        p_train_number: '',
+        p_class_type: '',
+        p_journey_date: '',
+        p_payment_mode: '',
+    });
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
-    const handleBookNow = (train) => {
-        setSelectedTrain(train);
-        setShowPassengerForm(true);
+    const handleBookingSubmit = async (e) => {
+        e.preventDefault();
+        console.log(formData)
+        try {
+            const response = await fetch('http://localhost:3000/users/book_ticket', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData),
+            });
+            const data = await response.json();
+
+            console.log(data);
+
+            if (data.success) {
+                alert('Ticket Booked Successfully!');
+                const pnr = data.pnr;
+                const passenger_id = data.p_id;
+                localStorage.setItem('p_id', passenger_id);
+                console.log(localStorage.getItem('p_id'));
+                alert(`your pnr is ${pnr}`);
+                setFormData({
+                    p_name: '',
+                    p_age: '',
+                    p_gender: '',
+                    p_concession_category: 'none',
+                    p_train_number: '',
+                    p_class_type: '',
+                    p_journey_date: '',
+                    p_payment_mode: '',
+                });
+            } else {
+                alert('Booking failed! Please try again.');
+            }
+        } catch (error) {
+            console.error('Error booking ticket:', error);
+            alert('There was an error. Please try again later.');
+        }
     };
 
     return (
         <div className="min-h-screen bg-gray-50 py-8">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
                 <h1 className="text-3xl font-bold text-gray-900 mb-8">Book Train Ticket</h1>
 
-                {/* Search Form */}
-                <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-                    <form onSubmit={handleSearch} className="space-y-6">
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                            {/* From Station */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    From Station
-                                </label>
-                                <select
-                                    className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                    required
-                                >
-                                    <option value="">Select Station</option>
-                                    {stations.map((station) => (
-                                        <option key={station.id} value={station.id}>
-                                            {station.name}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-
-                            {/* To Station */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    To Station
-                                </label>
-                                <select
-                                    className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                    required
-                                >
-                                    <option value="">Select Station</option>
-                                    {stations.map((station) => (
-                                        <option key={station.id} value={station.id}>
-                                            {station.name}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-
-                            {/* Date */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Date of Journey
-                                </label>
-                                <input
-                                    type="date"
-                                    className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                    required
-                                />
-                            </div>
-
-                            {/* Class Type */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Class Type
-                                </label>
-                                <select
-                                    className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                    required
-                                >
-                                    <option value="">Select Class</option>
-                                    {classTypes.map((classType) => (
-                                        <option key={classType.id} value={classType.id}>
-                                            {classType.name}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-                        </div>
-
-                        <div className="flex justify-center">
-                            <button
-                                type="submit"
-                                className="bg-gradient-to-r from-blue-700 to-indigo-700 text-white px-8 py-3 rounded-lg font-semibold hover:from-blue-800 hover:to-indigo-800 transition shadow-lg hover:shadow-xl"
-                            >
-                                Search Trains
-                            </button>
-                        </div>
-                    </form>
-                </div>
-
-                {/* Search Results */}
-                {searchResults.length > 0 && !showPassengerForm && (
-                    <div className="bg-white rounded-lg shadow-md p-6">
-                        <h2 className="text-xl font-semibold text-gray-900 mb-4">Available Trains</h2>
-                        <div className="space-y-4">
-                            {searchResults.map((train) => (
-                                <div
-                                    key={train.id}
-                                    className="border rounded-lg p-4 hover:shadow-md transition-shadow"
-                                >
-                                    <div className="flex justify-between items-center">
-                                        <div>
-                                            <h3 className="text-lg font-semibold">{train.trainName}</h3>
-                                            <p className="text-gray-600">Train No: {train.trainNumber}</p>
-                                        </div>
-                                        <div className="text-right">
-                                            <p className="text-gray-600">
-                                                {train.departureTime} → {train.arrivalTime}
-                                            </p>
-                                            <p className="text-gray-600">Duration: {train.duration}</p>
-                                        </div>
-                                    </div>
-                                    <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                                        {classTypes.map((classType) => (
-                                            <div
-                                                key={classType.id}
-                                                className="border rounded p-3 text-center"
-                                            >
-                                                <p className="font-medium">{classType.name}</p>
-                                                <p className="text-gray-600">₹{train.fare[classType.id]}</p>
-                                                <p className="text-sm text-gray-500">
-                                                    Available: {train.availability[classType.id]}
-                                                </p>
-                                            </div>
-                                        ))}
-                                    </div>
-                                    <div className="mt-4 flex justify-end">
-                                        <button
-                                            onClick={() => handleBookNow(train)}
-                                            className="bg-gradient-to-r from-blue-700 to-indigo-700 text-white px-6 py-2 rounded-lg font-semibold hover:from-blue-800 hover:to-indigo-800 transition"
-                                        >
-                                            Book Now
-                                        </button>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                )}
-
-                {/* Passenger Details Form */}
                 {showPassengerForm && (
                     <div className="bg-white rounded-lg shadow-md p-6">
                         <h2 className="text-xl font-semibold text-gray-900 mb-4">Passenger Details</h2>
-                        <form className="space-y-6">
+                        <form onSubmit={handleBookingSubmit} className="space-y-6">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        Full Name
-                                    </label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
                                     <input
                                         type="text"
-                                        className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                        name="p_name"
+                                        value={formData.p_name}
+                                        onChange={handleChange}
                                         required
+                                        className="w-full border rounded-lg px-3 py-2"
                                     />
                                 </div>
+
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        Age
-                                    </label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Age</label>
                                     <input
                                         type="number"
-                                        className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                        name="p_age"
+                                        value={formData.p_age}
+                                        onChange={handleChange}
                                         required
+                                        className="w-full border rounded-lg px-3 py-2"
                                     />
                                 </div>
+
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        Gender
-                                    </label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Gender</label>
                                     <select
-                                        className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                        name="p_gender"
+                                        value={formData.p_gender}
+                                        onChange={handleChange}
                                         required
+                                        className="w-full border rounded-lg px-3 py-2"
                                     >
                                         <option value="">Select Gender</option>
                                         <option value="male">Male</option>
@@ -233,32 +132,84 @@ const BookTicket = () => {
                                         <option value="other">Other</option>
                                     </select>
                                 </div>
+
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        Concession Type
-                                    </label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Concession Type</label>
                                     <select
-                                        className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                        name="p_concession_category"
+                                        value={formData.p_concession_category}
+                                        onChange={handleChange}
+                                        className="w-full border rounded-lg px-3 py-2"
                                     >
-                                        <option value="none">No Concession</option>
+                                        <option value="none">None</option>
                                         <option value="senior">Senior Citizen</option>
                                         <option value="student">Student</option>
-                                        <option value="military">Military Personnel</option>
+                                        <option value="military">Military</option>
                                     </select>
                                 </div>
                             </div>
 
-                            <div className="mt-6">
-                                <h3 className="text-lg font-medium text-gray-900 mb-4">Payment Method</h3>
-                                <div className="space-y-4">
-                                    <label className="flex items-center space-x-3">
-                                        <input type="radio" name="payment" value="online" className="h-4 w-4" />
-                                        <span>Online Payment</span>
-                                    </label>
-                                    <label className="flex items-center space-x-3">
-                                        <input type="radio" name="payment" value="cash" className="h-4 w-4" />
-                                        <span>Pay at Station</span>
-                                    </label>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Train</label>
+                                    <select
+                                        name="p_train_number"
+                                        value={formData.p_train_number}
+                                        onChange={handleChange}
+                                        required
+                                        className="w-full border rounded-lg px-3 py-2"
+                                    >
+                                        <option value="">Select Train</option>
+                                        {trains.map((train) => (
+                                            <option key={train.number} value={train.number}>
+                                                {train.number} ({train.name})
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Class Type</label>
+                                    <select
+                                        name="p_class_type"
+                                        value={formData.p_class_type}
+                                        onChange={handleChange}
+                                        required
+                                        className="w-full border rounded-lg px-3 py-2"
+                                    >
+                                        <option value="">Select Class</option>
+                                        {classTypes.map((cls) => (
+                                            <option key={cls.id} value={cls.name}>{cls.name}</option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Journey Date</label>
+                                    <input
+                                        type="date"
+                                        name="p_journey_date"
+                                        value={formData.p_journey_date}
+                                        onChange={handleChange}
+                                        required
+                                        className="w-full border rounded-lg px-3 py-2"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Payment Mode</label>
+                                    <select
+                                        name="p_payment_mode"
+                                        value={formData.p_payment_mode}
+                                        onChange={handleChange}
+                                        required
+                                        className="w-full border rounded-lg px-3 py-2"
+                                    >
+                                        <option value="">Select Payment Mode</option>
+                                        {paymentModes.map((mode) => (
+                                            <option key={mode} value={mode}>{mode}</option>
+                                        ))}
+                                    </select>
                                 </div>
                             </div>
 
@@ -266,13 +217,13 @@ const BookTicket = () => {
                                 <button
                                     type="button"
                                     onClick={() => setShowPassengerForm(false)}
-                                    className="px-6 py-2 border rounded-lg text-gray-700 hover:bg-gray-50 transition"
+                                    className="px-6 py-2 border rounded-lg text-gray-700 hover:bg-gray-100 transition"
                                 >
                                     Back
                                 </button>
                                 <button
                                     type="submit"
-                                    className="bg-gradient-to-r from-blue-700 to-indigo-700 text-white px-6 py-2 rounded-lg font-semibold hover:from-blue-800 hover:to-indigo-800 transition"
+                                    className="bg-blue-700 text-white px-6 py-2 rounded-lg hover:bg-blue-800 transition"
                                 >
                                     Confirm Booking
                                 </button>
@@ -285,4 +236,4 @@ const BookTicket = () => {
     );
 };
 
-export default BookTicket; 
+export default BookTicket;
