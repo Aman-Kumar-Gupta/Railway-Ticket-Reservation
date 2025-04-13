@@ -5,48 +5,43 @@ const PNRStatus = () => {
     const [pnrStatus, setPnrStatus] = useState(null);
     const [error, setError] = useState('');
 
-    const handleSearch = (e) => {
+    const handleSearch = async (e) => {
         e.preventDefault();
         setError('');
+        setPnrStatus(null);
 
-        // Validate PNR number (10 digits)
-        if (!/^\d{10}$/.test(pnrNumber)) {
-            setError('Please enter a valid 10-digit PNR number');
+        // Validate PNR number
+        if (!/^PNR\d{6}$/.test(pnrNumber)) {
+            setError('Please enter a valid PNR number in the format "PNR123456"');
             return;
         }
 
-        // Simulate API call with sample data
-        setPnrStatus({
-            pnrNumber: pnrNumber,
-            trainNumber: '12345',
-            trainName: 'Rajdhani Express',
-            journeyDate: '2024-04-15',
-            fromStation: 'Delhi',
-            toStation: 'Mumbai',
-            passengers: [
-                {
-                    name: 'John Doe',
-                    age: 25,
-                    gender: 'Male',
-                    bookingStatus: 'Confirmed',
-                    coach: 'B1',
-                    seatNumber: '23',
-                    class: '3A',
+        try {
+
+            const res = await fetch(`http://localhost:3000/pnr-enquiry?pnr=${pnrNumber}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${1234}`,
+                    'Content-Type': 'application/json',
                 },
-                {
-                    name: 'Jane Smith',
-                    age: 22,
-                    gender: 'Female',
-                    bookingStatus: 'RAC',
-                    coach: 'B1',
-                    seatNumber: 'RAC 5',
-                    class: '3A',
-                },
-            ],
-            chartStatus: 'Chart Prepared',
-            bookingDate: '2024-04-01',
-            totalFare: 2400,
-        });
+            });
+
+            const data = await res.json();
+
+            console.log(data[0]);
+
+            if (!res.ok) {
+                throw new Error(data.message || 'Something went wrong');
+            }
+
+            setPnrStatus(data[0]);
+        } catch (err) {
+            setError(err.message || 'Failed to fetch PNR status');
+        }
+
+
+
+
     };
 
     const getStatusColor = (status) => {
@@ -56,6 +51,8 @@ const PNRStatus = () => {
             case 'rac':
                 return 'text-yellow-600';
             case 'waitlisted':
+                return 'text-red-600';
+            case 'cancelled':
                 return 'text-red-600';
             default:
                 return 'text-gray-600';
@@ -107,20 +104,20 @@ const PNRStatus = () => {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
                                         <p className="text-sm text-gray-500">Train Number</p>
-                                        <p className="font-medium">{pnrStatus.trainNumber}</p>
+                                        <p className="font-medium">{pnrStatus.TrainNumber}</p>
                                     </div>
                                     <div>
                                         <p className="text-sm text-gray-500">Train Name</p>
-                                        <p className="font-medium">{pnrStatus.trainName}</p>
+                                        <p className="font-medium">{pnrStatus.TrainName}</p>
                                     </div>
                                     <div>
                                         <p className="text-sm text-gray-500">Journey Date</p>
-                                        <p className="font-medium">{pnrStatus.journeyDate}</p>
+                                        <p className="font-medium">{pnrStatus.JourneyDate}</p>
                                     </div>
                                     <div>
                                         <p className="text-sm text-gray-500">From/To</p>
                                         <p className="font-medium">
-                                            {pnrStatus.fromStation} → {pnrStatus.toStation}
+                                            {pnrStatus.SourceStation} → {pnrStatus.DestinationStation}
                                         </p>
                                     </div>
                                 </div>
@@ -134,10 +131,7 @@ const PNRStatus = () => {
                                         <thead className="bg-gray-50">
                                             <tr>
                                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                    Passenger
-                                                </th>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                    Age/Gender
+                                                    Passenger Name
                                                 </th>
                                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                     Class
@@ -151,39 +145,28 @@ const PNRStatus = () => {
                                             </tr>
                                         </thead>
                                         <tbody className="bg-white divide-y divide-gray-200">
-                                            {pnrStatus.passengers.map((passenger, index) => (
-                                                <tr key={index}>
-                                                    <td className="px-6 py-4 whitespace-nowrap">
-                                                        <div className="text-sm font-medium text-gray-900">
-                                                            {passenger.name}
-                                                        </div>
-                                                    </td>
-                                                    <td className="px-6 py-4 whitespace-nowrap">
-                                                        <div className="text-sm text-gray-500">
-                                                            {passenger.age} / {passenger.gender}
-                                                        </div>
-                                                    </td>
-                                                    <td className="px-6 py-4 whitespace-nowrap">
-                                                        <div className="text-sm text-gray-500">
-                                                            {passenger.class}
-                                                        </div>
-                                                    </td>
-                                                    <td className="px-6 py-4 whitespace-nowrap">
-                                                        <span
-                                                            className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(
-                                                                passenger.bookingStatus
-                                                            )}`}
-                                                        >
-                                                            {passenger.bookingStatus}
-                                                        </span>
-                                                    </td>
-                                                    <td className="px-6 py-4 whitespace-nowrap">
-                                                        <div className="text-sm text-gray-500">
-                                                            {passenger.coach} / {passenger.seatNumber}
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            ))}
+                                            <tr>
+                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                    <div className="text-sm font-medium text-gray-900">
+                                                        {pnrStatus.PassengerName}
+                                                    </div>
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                    <div className="text-sm text-gray-500">
+                                                        {pnrStatus.ClassType}
+                                                    </div>
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(pnrStatus.BookingStatus)}`}>
+                                                        {pnrStatus.BookingStatus}
+                                                    </span>
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                    <div className="text-sm text-gray-500">
+                                                       {pnrStatus.BookingStatus === "Confirmed" ? pnrStatus.CoachSeat : pnrStatus.BookingStatus}
+                                                    </div>
+                                                </td>
+                                            </tr>
                                         </tbody>
                                     </table>
                                 </div>
@@ -194,15 +177,15 @@ const PNRStatus = () => {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
                                         <p className="text-sm text-gray-500">Chart Status</p>
-                                        <p className="font-medium">{pnrStatus.chartStatus}</p>
+                                        <p className="font-medium">{pnrStatus.BookingStatus}</p>
                                     </div>
                                     <div>
                                         <p className="text-sm text-gray-500">Booking Date</p>
-                                        <p className="font-medium">{pnrStatus.bookingDate}</p>
+                                        <p className="font-medium">{pnrStatus.BookingDate}</p>
                                     </div>
                                     <div>
                                         <p className="text-sm text-gray-500">Total Fare</p>
-                                        <p className="font-medium">₹{pnrStatus.totalFare}</p>
+                                        <p className="font-medium">₹{pnrStatus.TotalFare}</p>
                                     </div>
                                 </div>
                             </div>

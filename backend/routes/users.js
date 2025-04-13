@@ -131,6 +131,8 @@ router.post('/cancel_ticket', async function (req, res) {
 
 router.post('/book_ticket', async function (req, res) {
   try {
+
+
     const {
       p_age,
       p_class_type,
@@ -222,6 +224,10 @@ router.post('/list_passengers_on_train', async function (req, res) {
   }
 
 });
+
+
+
+
 
 
 module.exports = router;

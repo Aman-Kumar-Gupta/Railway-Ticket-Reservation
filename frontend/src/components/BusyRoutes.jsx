@@ -7,20 +7,38 @@ const BusyRoutes = () => {
     const [error, setError] = useState('');
 
     // Mock data for demonstration
-    const mockRoutes = [
-        { id: 1, from: 'Delhi', to: 'Mumbai', passengers: 2500, percentage: 100 },
-        { id: 2, from: 'Kolkata', to: 'Chennai', passengers: 2100, percentage: 84 },
-        { id: 3, from: 'Bangalore', to: 'Hyderabad', passengers: 1800, percentage: 72 },
-        { id: 4, from: 'Mumbai', to: 'Ahmedabad', passengers: 1500, percentage: 60 },
-        { id: 5, from: 'Delhi', to: 'Kolkata', passengers: 1200, percentage: 48 },
-    ];
+    const fetchBusiestRoutes = async () => {
+        setLoading(true);
+        setError('');
+        setRoutes([]); // assuming `routes` is the state to store the data
+
+        try {
+            const res = await fetch('http://localhost:3000/busiest-routes', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                throw new Error(data.message || 'Something went wrong while fetching routes');
+            }
+
+            console.log(data);
+            setRoutes(data || []);
+        } catch (err) {
+            setError(err.message || 'Failed to fetch busiest routes');
+        } finally {
+            setLoading(false);
+        }
+    };
+
 
     useEffect(() => {
         // Simulate API call
-        setTimeout(() => {
-            setRoutes(mockRoutes);
-            setLoading(false);
-        }, 1000);
+        fetchBusiestRoutes()
     }, []);
 
     const getColorForPercentage = (percentage) => {
@@ -63,7 +81,7 @@ const BusyRoutes = () => {
                                                 </div>
                                                 <div>
                                                     <h3 className="text-lg font-semibold text-gray-900">
-                                                        {route.from} → {route.to}
+                                                        {route.SourceStation} → {route.DestinationStation}
                                                     </h3>
                                                     <p className="text-sm text-gray-500">Route #{index + 1}</p>
                                                 </div>
@@ -71,22 +89,11 @@ const BusyRoutes = () => {
                                             <div className="flex items-center gap-2">
                                                 <FaUsers className="text-gray-400" />
                                                 <span className="text-lg font-semibold text-gray-900">
-                                                    {route.passengers.toLocaleString()}
+                                                    {route.PassengerCount}
                                                 </span>
                                             </div>
                                         </div>
-                                        <div className="space-y-2">
-                                            <div className="flex justify-between text-sm text-gray-600">
-                                                <span>Passenger Load</span>
-                                                <span>{route.percentage}%</span>
-                                            </div>
-                                            <div className="w-full bg-gray-200 rounded-full h-2.5">
-                                                <div
-                                                    className={`h-2.5 rounded-full ${getColorForPercentage(route.percentage)}`}
-                                                    style={{ width: `${route.percentage}%` }}
-                                                ></div>
-                                            </div>
-                                        </div>
+                                        
                                     </div>
                                 ))}
                             </div>

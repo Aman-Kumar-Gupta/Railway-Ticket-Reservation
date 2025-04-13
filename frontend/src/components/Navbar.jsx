@@ -71,14 +71,10 @@ const Navbar = () => {
 
                         {/* Auth Section */}
                         <div className="flex space-x-1 border-l border-indigo-700 pl-3">
-                            <NavItem to="/LoginPage">Login</NavItem>
-                            <NavItem to="/SignupPage">Register</NavItem>
-                            <button
-                                onClick={handleLogout}
-                                className="px-3 py-2 rounded-md hover:bg-indigo-800 transition-colors duration-200"
-                            >
-                                Logout
-                            </button>
+                            <NavItem to="/analytics">Analytics</NavItem>
+                            <NavItem to="/ListPassengers">Passenger</NavItem>
+                            <NavItem to="/busy-routes">Busy</NavItem>
+
                         </div>
                     </div>
 
@@ -140,14 +136,10 @@ const Navbar = () => {
 
                     {/* Auth Section */}
                     <div className="border-t border-indigo-700 pt-2 mt-2 space-y-1">
-                        <MobileNavItem to="/LoginPage">Login</MobileNavItem>
-                        <MobileNavItem to="/SignupPage">Register</MobileNavItem>
-                        <button
-                            onClick={handleLogout}
-                            className="block w-full text-left px-3 py-2 rounded-md hover:bg-indigo-800 transition-colors duration-200"
-                        >
-                            Logout
-                        </button>
+                        <MobileNavItem to="/analtyics">Analytics</MobileNavItem>
+                        <MobileNavItem to="/ListPassenger">Passenger</MobileNavItem>
+                        <MobileNavItem to="/busy-routes">Busy</MobileNavItem>
+                        
                     </div>
                 </div>
             </div>
