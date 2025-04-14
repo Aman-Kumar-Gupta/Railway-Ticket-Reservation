@@ -1,5 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Navbar from "./Navbar";
+import jsPDF from 'jspdf';
+import { FaDownload } from 'react-icons/fa';
 
 const DashboardCard = ({ title, description, href }) => (
     <a
@@ -15,40 +17,70 @@ const HomePage = () => {
     const [stationsrc, setStationsrc] = useState('');
     const [stationout, setStationout] = useState('');
     const [trains, setTrains] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
     const [searchType, setSearchType] = useState('stations');
-    const [date, setDate] = useState('');
     const [trainNumber, setTrainNumber] = useState('');
     const [searched, setSearched] = useState(false);
 
     const stations = [
-        { StationID: 1, StationName: 'Mumbai Central' },
+        { StationID: 1, StationName: 'Mumbai CST' },
         { StationID: 2, StationName: 'Delhi Junction' },
-        { StationID: 3, StationName: 'Chennai Central' },
-        { StationID: 4, StationName: 'Howrah Junction' },
-        { StationID: 5, StationName: 'Bangalore City' },
-        { StationID: 6, StationName: 'Secunderabad Junction' },
-        { StationID: 7, StationName: 'Ahmedabad Junction' },
-        { StationID: 8, StationName: 'Pune Junction' },
-        { StationID: 9, StationName: 'Jaipur Junction' },
-        { StationID: 10, StationName: 'Lucknow Junction' },
-        { StationID: 11, StationName: 'Patna Junction' },
-        { StationID: 12, StationName: 'Bhubaneswar Junction' },
-        { StationID: 13, StationName: 'Thiruvananthapuram Central' },
-        { StationID: 14, StationName: 'Guwahati Junction' },
-        { StationID: 15, StationName: 'Amritsar Junction' }
+        { StationID: 3, StationName: 'Howrah' },
+        { StationID: 4, StationName: 'Chennai Central' },
+        { StationID: 5, StationName: 'Secunderabad' },
+        { StationID: 6, StationName: 'Pune Junction' },
+        { StationID: 7, StationName: 'Nagpur' },
+        { StationID: 8, StationName: 'Lucknow NR' },
+        { StationID: 9, StationName: 'Patna Jn' },
+        { StationID: 10, StationName: 'Bhopal Jn' },
+        { StationID: 11, StationName: 'Ahmedabad Jn' },
+        { StationID: 12, StationName: 'Jaipur' },
+        { StationID: 13, StationName: 'Coimbatore Jn' },
+        { StationID: 14, StationName: 'Trivandrum Central' },
+        { StationID: 15, StationName: 'Ranchi' },
+        { StationID: 16, StationName: 'Guwahati' },
+        { StationID: 17, StationName: 'Chandigarh' },
+        { StationID: 18, StationName: 'Indore' },
+        { StationID: 19, StationName: 'Jabalpur' },
+        { StationID: 20, StationName: 'Kanpur Central' },
+        { StationID: 21, StationName: 'Visakhapatnam' },
+        { StationID: 22, StationName: 'Varanasi Jn' },
+        { StationID: 23, StationName: 'Bhubaneswar' },
+        { StationID: 24, StationName: 'Madurai' },
+        { StationID: 25, StationName: 'Amritsar Jn' },
+        { StationID: 26, StationName: 'Gaya Jn' },
+        { StationID: 27, StationName: 'Haridwar' },
+        { StationID: 28, StationName: 'Kota Jn' },
+        { StationID: 29, StationName: 'Raipur Jn' },
+        { StationID: 30, StationName: 'Udaipur City' },
+        { StationID: 31, StationName: 'Tirupati' },
+        { StationID: 32, StationName: 'Nashik Road' },
+        { StationID: 33, StationName: 'Gwalior' },
+        { StationID: 34, StationName: 'Durg' },
+        { StationID: 35, StationName: 'Jamshedpur' },
+        { StationID: 36, StationName: 'Bilaspur' },
+        { StationID: 37, StationName: 'Surat' },
+        { StationID: 38, StationName: 'Meerut City' },
+        { StationID: 39, StationName: 'Agra Cantt' },
+        { StationID: 40, StationName: 'Aligarh' },
+        { StationID: 41, StationName: 'Panipat' },
+        { StationID: 42, StationName: 'Ludhiana' },
+        { StationID: 43, StationName: 'Jodhpur' },
+        { StationID: 44, StationName: 'Baroda' },
+        { StationID: 45, StationName: 'Dhanbad' },
+        { StationID: 46, StationName: 'Rourkela' },
+        { StationID: 47, StationName: 'Kharagpur' },
+        { StationID: 48, StationName: 'Jhansi Jn' },
+        { StationID: 49, StationName: 'Ajmer' },
+        { StationID: 50, StationName: 'Ernakulam Jn' }
     ];
 
     // Fetch trains based on source and destination stations or train number
     const handleSearch = async (e) => {
         e.preventDefault();
-        setLoading(true);
-        setError('');
-        setTrains([]);
-        setSearched(true);
-
         try {
+            setTrains([]);
+            setSearched(true);
+
             let url;
             if (searchType === 'stations') {
                 url = `http://localhost:3000/find-trains?stationsrc=${encodeURIComponent(stationsrc)}&stationout=${encodeURIComponent(stationout)}`;
@@ -65,12 +97,13 @@ const HomePage = () => {
 
             setTrains(data);
         } catch (err) {
-            setError(err.message);
-        } finally {
-            setLoading(false);
+            console.error(err.message);
         }
     };
 
+    
+
+    
 
     return (
         <>
@@ -215,8 +248,6 @@ const HomePage = () => {
                                         <tr>
                                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Train Number</th>
                                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Train Name</th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">From</th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">To</th>
                                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Departure</th>
                                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Arrival</th>
 
@@ -227,10 +258,9 @@ const HomePage = () => {
                                             <tr key={train.TrainID} className="hover:bg-gray-50">
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{train.TrainNumber}</td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{train.TrainName}</td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{train.SourceStation}</td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{train.DestinationStation}</td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{train.DepartureTime}</td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{train.ArrivalTime}</td>
+                                                
                                             </tr>
                                         ))}
                                     </tbody>
@@ -258,7 +288,7 @@ const HomePage = () => {
                             <DashboardCard
                                 title="Upcoming Trips"
                                 description="View and manage your booked journeys."
-                                href="/my-bookings"
+                                href="/LoginPage"
                             />
                             <DashboardCard
                                 title="Route Status"
