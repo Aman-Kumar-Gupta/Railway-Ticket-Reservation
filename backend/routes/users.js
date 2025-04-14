@@ -186,7 +186,6 @@ router.get('/bookings/:userId', async (req, res) => {
 
 });
 
-
 /// DATA AVAILABILIOTY
 
 router.post('/find_available', async (req, res) => {
