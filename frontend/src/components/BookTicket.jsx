@@ -4,10 +4,56 @@ const BookTicket = () => {
     const [showPassengerForm, setShowPassengerForm] = useState(true);
 
     const trains = [
-        { number: '12951', name: 'Rajdhani Express' },
-        { number: '23456', name: 'Mumbai Mail' },
-        { number: '34567', name: 'Kolkata Superfast' },
-        { number: '45678', name: 'Delhi Rajdhani' },
+        { number: '12301', name: 'Rajdhani Express' },
+        { number: '12001', name: 'Shatabdi Express' },
+        { number: '12245', name: 'Duronto Express' },
+        { number: '12909', name: 'Garib Rath' },
+        { number: '22119', name: 'Tejas Express' },
+        { number: '22436', name: 'Vande Bharat Express' },
+        { number: '12071', name: 'Jan Shatabdi' },
+        { number: '12931', name: 'Double Decker' },
+        { number: '12595', name: 'Humsafar Express' },
+        { number: '12731', name: 'Intercity Express' },
+        { number: '12345', name: 'Superfast Express' },
+        { number: '13005', name: 'Mail Express' },
+        { number: '54729', name: 'Passenger Special' },
+        { number: '12907', name: 'Sampark Kranti' },
+        { number: '22877', name: 'Antyodaya Express' },
+        { number: '13015', name: 'Kavi Guru Express' },
+        { number: '22417', name: 'Mahamana Express' },
+        { number: '12247', name: 'Yuva Express' },
+        { number: '22666', name: 'Uday Express' },
+        { number: '12369', name: 'Kumbh Express' },
+        { number: '12779', name: 'Goa Express' },
+        { number: '12137', name: 'Punjab Mail' },
+        { number: '14033', name: 'Jammu Mail' },
+        { number: '12123', name: 'Deccan Queen' },
+        { number: '12621', name: 'Chennai Express' },
+        { number: '10103', name: 'Mandovi Express' },
+        { number: '16345', name: 'Netravati Express' },
+        { number: '12627', name: 'Karnataka Express' },
+        { number: '12449', name: 'Goa Sampark Kranti' },
+        { number: '18477', name: 'Utkal Express' },
+        { number: '12622', name: 'Tamil Nadu Express' },
+        { number: '12393', name: 'Sampoorna Kranti' },
+        { number: '19037', name: 'Avadh Express' },
+        { number: '12471', name: 'Swaraj Express' },
+        { number: '12859', name: 'Gitanjali Express' },
+        { number: '12809', name: 'Howrah Mail' },
+        { number: '12801', name: 'Purushottam Express' },
+        { number: '12887', name: 'Puri Express' },
+        { number: '12723', name: 'Secunderabad Express' },
+        { number: '19407', name: 'Ahmedabad Express' },
+        { number: '16210', name: 'Ajmer Express' },
+        { number: '12645', name: 'Nizamuddin Express' },
+        { number: '15905', name: 'Vivek Express' },
+        { number: '15635', name: 'Kaziranga Express' },
+        { number: '12575', name: 'Sikkim Express' },
+        { number: '12343', name: 'Darjeeling Mail' },
+        { number: '16231', name: 'Mysuru Express' },
+        { number: '12671', name: 'Nilgiri Express' },
+        { number: '19019', name: 'Dehradun Express' },
+        { number: '17315', name: 'Goa Link Express' }
     ];
 
     const classTypes = [
@@ -78,7 +124,7 @@ const BookTicket = () => {
                 alert('Booking failed! Please try again.');
             }
         } catch (error) {
-            // console.error('Error booking ticket:', error);
+            console.error('Error booking ticket:', error);
             alert('There was an error. Please try again later.');
         }
     };
@@ -145,6 +191,7 @@ const BookTicket = () => {
                                         <option value="senior">Senior Citizen</option>
                                         <option value="student">Student</option>
                                         <option value="military">Military</option>
+                                        <option value="divyang">Divyang</option>
                                     </select>
                                 </div>
                             </div>
