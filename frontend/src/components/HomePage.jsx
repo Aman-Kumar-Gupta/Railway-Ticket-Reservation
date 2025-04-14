@@ -248,6 +248,8 @@ const HomePage = () => {
                                         <tr>
                                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Train Number</th>
                                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Train Name</th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">From</th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">To</th>
                                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Departure</th>
                                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Arrival</th>
 
@@ -258,6 +260,8 @@ const HomePage = () => {
                                             <tr key={train.TrainID} className="hover:bg-gray-50">
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{train.TrainNumber}</td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{train.TrainName}</td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{train.SourceStation}</td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{train.DestinationStation}</td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{train.DepartureTime}</td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{train.ArrivalTime}</td>
                                                 
@@ -288,7 +292,7 @@ const HomePage = () => {
                             <DashboardCard
                                 title="Upcoming Trips"
                                 description="View and manage your booked journeys."
-                                href="/LoginPage"
+                                href="/my-bookings"
                             />
                             <DashboardCard
                                 title="Route Status"
