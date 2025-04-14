@@ -28,7 +28,7 @@ const PNRStatus = () => {
 
             const data = await res.json();
 
-            console.log(data[0]);
+            // console.log(data[0]);
 
             if (!res.ok) {
                 throw new Error(data.message || 'Something went wrong');

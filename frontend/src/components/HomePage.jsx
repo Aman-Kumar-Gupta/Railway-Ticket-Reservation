@@ -3,7 +3,6 @@ import logo from '../assets/logo2.webp';
 import { useNavigate } from 'react-router-dom';
 import Navbar from "./Navbar";
 
-
 const DashboardCard = ({ title, description, href }) => (
     <a
         href={href}
@@ -279,13 +278,13 @@ const HomePage = () => {
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{train.DepartureTime}</td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{train.ArrivalTime}</td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                    <button
+                                                    {/* <button
                                                         onClick={() => handleDownloadTicket(train)}
                                                         className="bg-blue-600 text-white px-3 py-1 rounded-md hover:bg-blue-700 flex items-center gap-2"
                                                     >
                                                         <FaDownload />
                                                         Download Ticket
-                                                    </button>
+                                                    </button> */}
                                                 </td>
                                             </tr>
                                         ))}

@@ -26,7 +26,7 @@ const BusyRoutes = () => {
                 throw new Error(data.message || 'Something went wrong while fetching routes');
             }
 
-            console.log(data);
+            // console.log(data);
             setRoutes(data || []);
         } catch (err) {
             setError(err.message || 'Failed to fetch busiest routes');

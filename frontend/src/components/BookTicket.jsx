@@ -44,7 +44,7 @@ const BookTicket = () => {
 
     const handleBookingSubmit = async (e) => {
         e.preventDefault();
-        console.log(formData)
+        // console.log(formData)
         try {
             const response = await fetch('http://localhost:3000/users/book_ticket', {
                 method: 'POST',
@@ -55,14 +55,14 @@ const BookTicket = () => {
             });
             const data = await response.json();
 
-            console.log(data);
+            // console.log(data);
 
             if (data.success) {
                 alert('Ticket Booked Successfully!');
                 const pnr = data.pnr;
                 const passenger_id = data.p_id;
                 localStorage.setItem('p_id', passenger_id);
-                console.log(localStorage.getItem('p_id'));
+                // console.log(localStorage.getItem('p_id'));
                 alert(`your pnr is ${pnr}`);
                 setFormData({
                     p_name: '',
@@ -78,7 +78,7 @@ const BookTicket = () => {
                 alert('Booking failed! Please try again.');
             }
         } catch (error) {
-            console.error('Error booking ticket:', error);
+            // console.error('Error booking ticket:', error);
             alert('There was an error. Please try again later.');
         }
     };
@@ -191,6 +191,7 @@ const BookTicket = () => {
                                         name="p_journey_date"
                                         value={formData.p_journey_date}
                                         onChange={handleChange}
+                                        min={new Date().toISOString().split('T')[0]}
                                         required
                                         className="w-full border rounded-lg px-3 py-2"
                                     />

@@ -101,6 +101,7 @@ const SeatAvailability = () => {
                                     name="date"
                                     value={formData.date}
                                     onChange={handleInputChange}
+                                    min={new Date().toISOString().split('T')[0]}
                                     className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500"
                                     required
                                 />

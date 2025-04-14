@@ -170,7 +170,7 @@ const MyBookings = () => {
                     },
                 });
                 const data = await res.json();
-                console.log("Fetched Data:", data);
+                // console.log("Fetched Data:", data);
 
                 const today = new Date();
                 const upcoming = [];
