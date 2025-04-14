@@ -71,7 +71,7 @@ const MyBookings = () => {
         const arrowY = infoY - 7; // Slight vertical adjustment
 
         // Line between source and destination
-        
+
 
         // Add arrow image in center
         const arrowImgWidth = 10;
@@ -127,6 +127,14 @@ const MyBookings = () => {
         const lines3 = wrapText(booking.BookingStatus, col2X + 45, infoY, colWidth - 45);
         infoY += Math.max(0, (lines3 - 1) * 10);
 
+
+        // Row 4: Passenger Name
+        infoY += 15;
+        doc.setFont(undefined, 'bold');
+        doc.text("Passenger Name:", col1X, infoY);
+        doc.setFont(undefined, 'normal');
+        wrapText(booking.Name, col1X + 45, infoY, colWidth - 45);
+
         // Travel Instructions
         infoY += 25;
         doc.setFontSize(12);
@@ -170,7 +178,7 @@ const MyBookings = () => {
                     },
                 });
                 const data = await res.json();
-                // console.log("Fetched Data:", data);
+                console.log("Fetched Data:", data);
 
                 const today = new Date();
                 const upcoming = [];
@@ -224,7 +232,7 @@ const MyBookings = () => {
                 </div>
 
                 {/* User ID Input Box */}
-                <div className="mb-8">
+                {/* <div className="mb-8">
                     <input
                         type="text"
                         value={userId}
@@ -238,7 +246,7 @@ const MyBookings = () => {
                     >
                         Fetch Bookings
                     </button>
-                </div>
+                </div> */}
 
                 {/* Tabs */}
                 <div className="bg-white rounded-2xl shadow-xl p-8 mb-8">
