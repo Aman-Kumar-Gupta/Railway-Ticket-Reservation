@@ -28,7 +28,20 @@ Ensure you have the following installed:
 
 ---
 
-## **Backend Setup **
+## Backend Setup 
+
+### **1.Navigate to backend**
+
+```sh
+cd backend
+```
+
+### 2.Install frontend dependencies and start server
+
+```sh
+npm install
+npx nodemon
+```
 
 
 ## Frontend Setup
@@ -74,10 +87,16 @@ Station
 
 Route
 
-ClassType (AC, Sleeper, etc.)
+Schedule
+
+Class
 
 Seat
 
 Ticket
 
+SeatAvailability
+ 
 Payment
+
+Concession
