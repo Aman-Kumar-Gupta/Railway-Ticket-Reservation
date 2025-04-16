@@ -36,7 +36,7 @@ Ensure you have the following installed:
 cd backend
 ```
 
-### 2.Install frontend dependencies and start server
+### 2.Install backend dependencies and start server
 
 ```sh
 npm install
@@ -96,7 +96,7 @@ Seat
 Ticket
 
 SeatAvailability
- 
+
 Payment
 
 Concession
